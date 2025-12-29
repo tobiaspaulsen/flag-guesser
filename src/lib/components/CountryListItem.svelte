@@ -25,7 +25,7 @@
 
 <li
   class="bg-primary-900 p-2 flex items-center gap-3 h-12 cursor-pointer hover:bg-primary-200 transition-colors"
-  class:!bg-primary-100={highlighted}
+  class:!bg-primary-200={highlighted}
   class:font-semibold={highlighted}
   role="option"
   tabindex="0"

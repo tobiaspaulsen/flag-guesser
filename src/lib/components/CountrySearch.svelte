@@ -211,7 +211,7 @@
 >
   <div class="autocomplete">
     <input
-      class="h-11 p-2 rounded w-full placeholder:text-primary-100 bg-primary-900 text-primary-50 border border-primary-200"
+      class="h-11 p-2 rounded w-full placeholder:text-primary-100 bg-primary-900 text-primary-50 border-2 border-primary-100/70 focus:border-secondary-900/70 focus:outline-none transition-colors"
       id="country-input"
       type="text"
       placeholder="Search for a country..."
