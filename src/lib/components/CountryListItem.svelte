@@ -24,10 +24,7 @@
 <li
   class="autocomplete-items bg-primary-50 p-2 flex gap-3 h-12 cursor-pointer hover:bg-primary-100 transition-colors"
   class:!bg-primary-200={highlighted}
-  class:border-l-4={highlighted}
-  class:border-primary-900={highlighted}
   class:font-semibold={highlighted}
-  class:autocomplete-active={highlighted}
   role="option"
   tabindex="0"
   aria-selected={highlighted}

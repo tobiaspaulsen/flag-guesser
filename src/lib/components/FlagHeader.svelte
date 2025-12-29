@@ -11,7 +11,7 @@
       <span>Today's flag completed</span>
     </div>
   {/if}
-  <div class="text-xl text-primary-500 font-medium">
+  <div class="text-xl text-primary-900 font-medium">
     {targetCountryState.isTodaysFlag ? "Today's Flag" : 'Random Flag'}
   </div>
 </div>

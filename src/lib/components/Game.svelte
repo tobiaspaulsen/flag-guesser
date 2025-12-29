@@ -51,7 +51,6 @@
     }
 
     try {
-      const guessedCountryImageUrl = `/countries/png/${guessCountryCode}.png`;
       overlayFlagUrl = `/countries/png/${guessCountryCode}.png`;
       showOverlay = true;
       setTimeout(() => {
@@ -59,7 +58,7 @@
       }, 800);
       
       let image1: Image = await Image.load(targetCountryState.targetFlagImgUrl);
-      let image2: Image = await Image.load(`/countries/png/${guessCountryCode}.png`);
+      let image2: Image = await Image.load(overlayFlagUrl);
       
       let intersect = getImageIntersect(image1, image2, 0.5);
       
@@ -69,6 +68,7 @@
 
       if (guessesState.guessesList.length >= 5) {
         gameOver = true;
+        targetCountryState.markTodayCompleted();
       }
       guessString = '';
       const guessInput = document.getElementById('country-input');
@@ -104,6 +104,7 @@
   <div class="flex gap-2 w-full justify-center items-center">
     <CountrySearch
       {countriesState}
+      disabled={gameOver || gameWon}
       bind:guessString
       onsubmit={checkGuess}
       guessedCountries={guessesState.guessedCountries}

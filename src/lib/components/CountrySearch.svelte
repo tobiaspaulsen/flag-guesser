@@ -7,12 +7,14 @@
     countriesState,
     guessString = $bindable(),
     onsubmit,
-    guessedCountries = []
+    guessedCountries = [],
+    disabled = false
   }: {
     countriesState: ICountriesState;
     guessString: string;
     onsubmit?: () => void;
     guessedCountries?: string[];
+    disabled?: boolean;
   } = $props();
 
   const db = $derived(
@@ -39,6 +41,7 @@
   let searchInput: HTMLInputElement = $state()!;
   let formElement: HTMLFormElement = $state()!;
   let listContainer: HTMLUListElement = $state()!;
+  let listScrollable: boolean = $state(false);
 
   // Auto-scroll to highlighted item
   $effect(() => {
@@ -51,6 +54,11 @@
   });
 
   const filterCountries = (): void => {
+    if (disabled) {
+      filteredCountries = [];
+      highlightIndex = null;
+      return;
+    }
     if (!guessString) {
       filteredCountries = countriesState.countries
         .filter((country) => !guessedCountries.includes(country.name))
@@ -95,11 +103,13 @@
   });
 
   const clearInput = () => {
+    if (disabled) return;
     guessString = '';
     searchInput.focus();
   };
 
   const setInputVal = (countryName: string) => {
+    if (disabled) return;
     guessString = removeBold(countryName);
     filteredCountries = [];
     highlightIndex = null;
@@ -130,6 +140,7 @@
   /* NAVIGATING OVER THE LIST OF COUNTRIES W HIGHLIGHTING */
 
   const navigateList = (e: KeyboardEvent) => {
+    if (disabled) return;
     // If dropdown is closed and user presses down, reopen it
     if (filteredCountries.length === 0 && e.key === 'ArrowDown') {
       e.preventDefault();
@@ -168,6 +179,7 @@
 
   const handleSubmit = (e: Event) => {
     e.preventDefault();
+    if (disabled) return;
     // Only submit if there's a guess and dropdown is not visible or no item is highlighted
     if (guessString.trim().length > 0 && (filteredCountries.length === 0 || highlightIndex === null)) {
       if (onsubmit) {
@@ -180,6 +192,7 @@
 
   /* CLICK OUTSIDE TO CLOSE */
   const handleClickOutside = (e: MouseEvent) => {
+    if (disabled) return;
     if (formElement && !formElement.contains(e.target as Node)) {
       filteredCountries = [];
       highlightIndex = null;
@@ -201,6 +214,7 @@
       id="country-input"
       type="text"
       placeholder="Search for a country..."
+      disabled={disabled}
       bind:this={searchInput}
       bind:value={guessString}
       oninput={filterCountries}

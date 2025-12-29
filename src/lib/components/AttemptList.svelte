@@ -4,17 +4,17 @@
   let { guessesState }: { guessesState: IGuessesState } = $props();
 </script>
 
-<div class="flex flex-col gap-3 w-full mt-4">
+<div class="flex flex-col gap-3 w-full mt-4 text-l">
   <div class="text-primary-200 text-sm font-semibold uppercase tracking-wide">Your guesses</div>
 
   {#each Array(5) as _, i}
     <div
-      class="flex rounded-lg overflow-hidden border border-primary-100 transition-all"
+      class="flex h-14 rounded-lg overflow-hidden border border-primary-100 transition-all"
       class:bg-primary-50={guessesState.guessesList[i]}
       class:bg-transparent={!guessesState.guessesList[i]}
       class:border-dashed={!guessesState.guessesList[i]}
     >
-      <div class="w-16 flex items-center justify-center bg-primary-100/30 p-2">
+      <div class="w-20 flex items-center justify-center bg-primary-100/30 p-2">
         {#if guessesState.guessesList[i]?.img}
           <img
             class="h-full w-full object-contain rounded"
@@ -22,7 +22,7 @@
             alt="Flag of {guessesState.guessesList[i].country}"
           />
         {:else}
-          <div class="text-primary-200/40 text-xs">{i + 1}</div>
+          <div class="text-primary-200/40">{i + 1}</div>
         {/if}
       </div>
       <div class="grow flex items-center px-4 text-primary-900">
