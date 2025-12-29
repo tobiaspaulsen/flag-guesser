@@ -1,6 +1,6 @@
 import { Image } from 'image-js';
 
-const THRESHOLD = 80;
+const THRESHOLD = 90;
 
 const rgb_difference = (rgb1: number[], rgb2: number[]): number => {
   const [r1, g1, b1] = rgb1;

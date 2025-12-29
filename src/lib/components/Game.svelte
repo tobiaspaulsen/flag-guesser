@@ -4,6 +4,9 @@
   import { type ICountriesState, type IGuessesState, type ITargetCountryState } from '$lib/state.svelte';
   import CountrySearch from './CountrySearch.svelte';
   import AttemptList from './AttemptList.svelte';
+  import FlagHeader from './FlagHeader.svelte';
+  import FlagResultPanel from './FlagResultPanel.svelte';
+  import FlagDisplay from './FlagDisplay.svelte';
 
   // Game state
   let gameOver: boolean = $state(false);
@@ -92,57 +95,11 @@
 </script>
 
 <div class="flex flex-col items-center gap-5">
-  <div class="flex flex-col items-center gap-1">
-    {#if !targetCountryState.isTodaysFlag}
-      <div class="text-s text-secondary-100 flex items-center gap-1">
-        <span>✓</span>
-        <span>Today's flag completed</span>
-      </div>
-    {/if}
-    <div class="text-xl text-primary-500 font-medium">
-      {targetCountryState.isTodaysFlag ? "Today's Flag" : 'Random Flag'}
-    </div>
-  </div>
+  <FlagHeader {targetCountryState} />
 
-  {#if gameWon || gameOver}
-    <div class="w-full bg-primary-50 border-2 border-primary-200 rounded-lg p-6 text-center">
-      <div class="text-2xl font-bold mb-2" class:text-secondary-100={gameWon} class:text-primary-900={!gameWon}>
-        {gameWon ? 'Congratulations!' : 'Game Over'}
-      </div>
-      <div class="text-primary-900 mb-4">
-        {#if gameWon}
-          You guessed <span class="font-semibold text-secondary-100">{targetCountryState.targetCountry?.name}</span> correctly!
-        {:else}
-          The correct answer was <span class="font-semibold text-secondary-100">{targetCountryState.targetCountry?.name}</span>
-        {/if}
-      </div>
-      <button
-        onclick={restartGame}
-        class="bg-secondary-100 text-secondary-900 px-6 py-3 rounded-lg font-semibold hover:bg-secondary-200 transition-colors"
-      >
-        Play Random Mode
-      </button>
-    </div>
-  {/if}
-  
-  <div
-    class="flex flex-row justify-center items-center border-2 border-solid border-primary-200 rounded-lg bg-primary-50/20 relative overflow-hidden"
-    style="width: 400px; height: 300px;"
-  >
-    {#if guessCountryCode !== undefined}
-      {#if showOverlay}
-        <img 
-          src={overlayFlagUrl} 
-          alt="" 
-          class="absolute inset-0 object-contain overlay-animation z-10"
-        />
-      {/if}
-      <img src={imgUrl} alt="" class="absolute inset-0 object-contain" />
-    {:else}
-      <div class="text-primary-200 text-center p-4">
-      </div>
-    {/if}
-  </div>
+  <FlagResultPanel {gameWon} {gameOver} {targetCountryState} {restartGame} />
+
+  <FlagDisplay {guessCountryCode} {showOverlay} {overlayFlagUrl} {imgUrl} />
 
   <div class="flex gap-2 w-full justify-center items-center">
     <CountrySearch
@@ -166,33 +123,3 @@
   </div>
   <AttemptList {guessesState} />
 </div>
-
-<style>
-  .overlay-animation {
-    animation: overlayFade 1s ease-in-out;
-  }
-  
-  @keyframes overlayFade {
-    0% {
-      opacity: 0;
-    }
-    5% {
-      opacity: 0.5;
-    }
-    10% {
-      opacity: 1;
-    }
-    85% {
-      opacity: 1;
-    }
-    90% {
-      opacity: 0.7;
-    }
-    95% {
-      opacity: 0.5;
-    }
-    100% {
-      opacity: 0;
-    }
-  }
-</style>

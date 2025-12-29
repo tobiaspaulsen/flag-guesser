@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Flag from '$lib/components/Flag.svelte';
+  import Game from '$lib/components/Game.svelte';
   import { createCountriesState, createGuessesState, createTargetCountryState } from '$lib/state.svelte';
 
   const guessesState = createGuessesState();
@@ -15,7 +15,7 @@
 </header>
 <div class="w-[min(75vw,400px)]">
   {#if countriesState.loaded && targetCountryState}
-    <Flag {guessesState} {countriesState} {targetCountryState} />
+    <Game {guessesState} {countriesState} {targetCountryState} />
   {:else}
     <p>Loading...</p>
   {/if}
