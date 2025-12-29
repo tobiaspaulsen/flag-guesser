@@ -10,7 +10,7 @@
   );
 </script>
 
-<header class="text-primary-900 text-center p-5 mb-3 w-full">
+<header class="text-primary-50 text-center p-5 mb-3 w-full">
   <h1 class="text-3xl font-variation-settings-[150] font-medium">Flag Guesser</h1>
 </header>
 <div class="w-[min(75vw,400px)]">

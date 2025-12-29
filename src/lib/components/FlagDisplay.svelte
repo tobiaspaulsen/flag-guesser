@@ -11,7 +11,7 @@
 </script>
 
 <div
-  class="flex flex-row justify-center items-center border-2 border-solid border-primary-200 rounded-lg bg-primary-50/20 relative overflow-hidden"
+  class="flex flex-row justify-center items-center border-2 border-solid border-primary-100 rounded-lg bg-primary-900/20 relative overflow-hidden"
   style="width: 400px; height: 300px;"
 >
   {#if imgUrl !== undefined}
@@ -24,7 +24,7 @@
     {/if}
     <img src={imgUrl} alt="" class="absolute inset-0 object-contain" />
   {:else}
-    <div class="text-primary-200 text-center p-4"></div>
+    <div class="text-primary-100 text-center p-4"></div>
   {/if}
 </div>
 <style>

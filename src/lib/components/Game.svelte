@@ -116,7 +116,7 @@
         gameWon ||
         guessString.trim().length === 0 ||
         guessesState.guessedCountries.includes(guessString.trim())}
-      class="bg-secondary-200 min-h-11 p-2 rounded self-start text-secondary-900 disabled:bg-secondary-200/[0.5] disabled:text-secondary-500 disabled:cursor-not-allowed
+      class="bg-secondary-900 min-h-11 p-2 rounded self-start text-secondary-100 disabled:bg-secondary-900/[0.5] disabled:text-secondary-500 disabled:cursor-not-allowed
 		"
       onclick={checkGuess}
       >{guessesState.guessedCountries.includes(guessString.trim())

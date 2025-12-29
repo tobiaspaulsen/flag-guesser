@@ -211,7 +211,7 @@
 >
   <div class="autocomplete">
     <input
-      class="h-11 p-2 rounded w-full placeholder:text-primary-200 bg-primary-50 text-primary-900 border border-primary-100"
+      class="h-11 p-2 rounded w-full placeholder:text-primary-100 bg-primary-900 text-primary-50 border border-primary-200"
       id="country-input"
       type="text"
       placeholder="Search for a country..."
@@ -224,11 +224,11 @@
     />
   </div>
   {#if filteredCountries.length > 0}
-    <div class="absolute w-full top-11 rounded-b-lg overflow-hidden shadow-2xl border border-t-0 border-primary-100">
+    <div class="absolute w-full top-11 rounded-b-lg overflow-hidden shadow-2xl border border-t-0 border-primary-200">
       <ul
         bind:this={listContainer}
         id="autocomplete-items-list"
-        class="divide-y w-full divide-primary-100 m-0 max-h-[13.5rem] overflow-y-auto bg-primary-50 scrollbar-thin"
+        class="divide-y w-full divide-primary-200 m-0 max-h-[13.5rem] overflow-y-auto bg-primary-900 scrollbar-thin"
         style="scrollbar-width: thin; scrollbar-color: #6B7280 #374151;"
       >
         {#each filteredCountries as countryObj, i}
@@ -242,7 +242,7 @@
           />
         {/each}
       </ul>
-      <div class="h-4 bg-gradient-to-t from-primary-50 to-transparent pointer-events-none absolute bottom-0 left-0 right-0"></div>
+      <div class="h-4 bg-gradient-to-t from-primary-900 to-transparent pointer-events-none absolute bottom-0 left-0 right-0"></div>
     </div>
   {/if}
 </form>
