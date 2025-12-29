@@ -14,7 +14,7 @@
       class:bg-transparent={!guessesState.guessesList[i]}
       class:border-dashed={!guessesState.guessesList[i]}
     >
-      <div class="w-20 flex items-center justify-center bg-primary-200/30 p-2">
+      <div class="w-20 flex items-center justify-center bg-primary-200/60 p-2">
         {#if guessesState.guessesList[i]?.img}
           <img
             class="h-full w-full object-contain rounded"
@@ -22,7 +22,7 @@
             alt="Flag of {guessesState.guessesList[i].country}"
           />
         {:else}
-          <div class="text-primary-100/30">{i + 1}</div>
+          <div class="text-primary-50/30">{i + 1}</div>
         {/if}
       </div>
       <div class="grow flex items-center px-4 text-primary-50">
@@ -31,7 +31,7 @@
         {/if}
       </div>
       <div
-        class="w-20 flex items-center justify-center text-center font-semibold bg-primary-200/30"
+        class="w-20 flex items-center justify-center text-center font-semibold bg-primary-200/60"
       >
         {#if guessesState.guessesList[i]?.score}
           <span class="text-secondary-600">{guessesState.guessesList[i].score}%</span>
