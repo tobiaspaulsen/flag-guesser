@@ -23,9 +23,9 @@ export function createCountriesState(): ICountriesState {
     fetch('/countries/countries.json')
       .then((res) => res.json())
       .then((data) => {
-        countriesState = Object.entries(data).map(([countryCode, name]) => ({
-          countryCode: countryCode.toLowerCase(),
-          name: name as string
+        countriesState = data.map((country: { code: string; name: string }) => ({
+          countryCode: country.code.toLowerCase(),
+          name: country.name
         }));
         loaded = true;
       });
@@ -61,7 +61,6 @@ export interface ITargetCountryState {
   markTodayCompleted: () => void;
 }
 
-// Helper function to get today's index based on date
 function getTodaysFlagIndex(totalCountries: number): number {
   const today = new Date();
   const diffTime = today.getTime();
@@ -69,7 +68,6 @@ function getTodaysFlagIndex(totalCountries: number): number {
   return diffDays % totalCountries;
 }
 
-// Helper function to check if today's flag is completed (stored in localStorage)
 function isTodayCompleted(): boolean {
   if (typeof window === 'undefined') return false;
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
@@ -77,7 +75,6 @@ function isTodayCompleted(): boolean {
   return completedDate === today;
 }
 
-// Helper function to mark today's flag as completed
 function markTodayCompleted(): void {
   if (typeof window === 'undefined') return;
   const today = new Date().toISOString().split('T')[0];

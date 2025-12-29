@@ -23,7 +23,7 @@ export const getImageIntersect = (
       const p1 = image1.getPixelXY(x, y);
       const p2 = image2.getPixelXY(x, y);
       const diff = rgb_difference(p1, p2);
-      const p3 = diff < THRESHOLD ? p1 : [0, 0, 0];
+      const p3 = diff < THRESHOLD ? p1 : [0, 0, 0, 0];
       result.setPixelXY(x, y, p3);
       counter = diff < THRESHOLD && p1.some((x) => x) ? counter + 1 : counter;
       actualMax = p1.some((x) => x) ? actualMax + 1 : actualMax;

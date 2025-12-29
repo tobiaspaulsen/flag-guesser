@@ -5,11 +5,6 @@
   import CountrySearch from './CountrySearch.svelte';
   import AttemptList from './AttemptList.svelte';
 
-  //Image scales
-  const flagHeight = 200;
-  let initialImageWidth: number = $state(0);
-  let imageScaleRatio: number = $state(1);
-
   // Game state
   let gameOver: boolean = $state(false);
   let gameWon: boolean = $state(false);
@@ -53,25 +48,21 @@
     }
 
     try {
-      let image1: Image = await Image.load(targetCountryState.targetFlagImgUrl);
-
-      imageScaleRatio = flagHeight / image1.height;
-      initialImageWidth = image1.width;
-
-      let image2: Image = await Image.load(`/countries/png/${guessCountryCode}.png`);
-
-      let a = getImageIntersect(image1, image2, imageScaleRatio);
-
-      currentResult = getImageUnion(currentResult, a.Image);
-      
-      // Show overlay animation
+      const guessedCountryImageUrl = `/countries/png/${guessCountryCode}.png`;
       overlayFlagUrl = `/countries/png/${guessCountryCode}.png`;
       showOverlay = true;
       setTimeout(() => {
         showOverlay = false;
-      }, 1000);
+      }, 800);
+      
+      let image1: Image = await Image.load(targetCountryState.targetFlagImgUrl);
+      let image2: Image = await Image.load(`/countries/png/${guessCountryCode}.png`);
+      
+      let intersect = getImageIntersect(image1, image2, 0.5);
+      
+      currentResult = getImageUnion(currentResult, intersect.Image);
 
-      guessesState.addNewGuess({ country: guessString, score: `${a.percent}`, img: image2 });
+      guessesState.addNewGuess({ country: guessString, score: `${intersect.percent}`, img: image2 });
 
       if (guessesState.guessesList.length >= 5) {
         gameOver = true;
@@ -136,14 +127,14 @@
   
   <div
     class="flex flex-row justify-center items-center border-2 border-solid border-primary-200 rounded-lg bg-primary-50/20 relative overflow-hidden"
-    style="width: {initialImageWidth * imageScaleRatio || 400}px; height: {flagHeight}px;"
+    style="width: 400px; height: 300px;"
   >
     {#if guessCountryCode !== undefined}
       {#if showOverlay}
         <img 
           src={overlayFlagUrl} 
           alt="" 
-          class="absolute inset-0 object-contain overlay-animation"
+          class="absolute inset-0 object-contain overlay-animation z-10"
         />
       {/if}
       <img src={imgUrl} alt="" class="absolute inset-0 object-contain" />
@@ -185,11 +176,20 @@
     0% {
       opacity: 0;
     }
+    5% {
+      opacity: 0.5;
+    }
     10% {
       opacity: 1;
     }
-    90% {
+    85% {
       opacity: 1;
+    }
+    90% {
+      opacity: 0.7;
+    }
+    95% {
+      opacity: 0.5;
     }
     100% {
       opacity: 0;
