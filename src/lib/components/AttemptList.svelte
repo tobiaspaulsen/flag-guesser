@@ -22,7 +22,7 @@
             alt="Flag of {guessesState.guessesList[i].country}"
           />
         {:else}
-          <div class="text-primary-200/40">{i + 1}</div>
+          <div class="text-primary-200/30">{i + 1}</div>
         {/if}
       </div>
       <div class="grow flex items-center px-4 text-primary-900">
@@ -36,7 +36,7 @@
         {#if guessesState.guessesList[i]?.score}
           <span class="text-secondary-100">{guessesState.guessesList[i].score}%</span>
         {:else}
-          <span class="text-primary-200/40">-</span>
+          <span class="text-primary-200/30">-</span>
         {/if}
       </div>
     </div>

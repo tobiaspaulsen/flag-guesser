@@ -1,13 +1,15 @@
 <script lang="ts">
   const {
     countryName,
+    withImage,
     countryImgSrc,
     countryHtmlListItem,
     highlighted,
     onclick
   }: {
-    countryImgSrc: string;
     countryName: string;
+    withImage: boolean;
+    countryImgSrc: string;
     countryHtmlListItem: string;
     highlighted: boolean;
     onclick: () => void;
@@ -22,7 +24,7 @@
 </script>
 
 <li
-  class="autocomplete-items bg-primary-50 p-2 flex gap-3 h-12 cursor-pointer hover:bg-primary-100 transition-colors"
+  class="bg-primary-50 p-2 flex items-center gap-3 h-12 cursor-pointer hover:bg-primary-100 transition-colors"
   class:!bg-primary-200={highlighted}
   class:font-semibold={highlighted}
   role="option"
@@ -31,8 +33,10 @@
   {onclick}
   onkeydown={handleKeydown}
 >
-  <img src={countryImgSrc} alt="Flag of {countryName}" />
-  <div>
+  {#if withImage}
+    <img class="h-8 w-auto" src={countryImgSrc} alt="Flag of {countryName}" />
+  {/if}
+  <div class="leading-snug">
     {@html countryHtmlListItem}
   </div>
 </li>

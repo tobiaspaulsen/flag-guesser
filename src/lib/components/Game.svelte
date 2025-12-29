@@ -69,6 +69,7 @@
       if (guessesState.guessesList.length >= 5) {
         gameOver = true;
         targetCountryState.markTodayCompleted();
+        imgUrl = targetCountryState.targetFlagImgUrl;
       }
       guessString = '';
       const guessInput = document.getElementById('country-input');
@@ -99,7 +100,7 @@
 
   <FlagResultPanel {gameWon} {gameOver} {targetCountryState} {restartGame} />
 
-  <FlagDisplay {guessCountryCode} {showOverlay} {overlayFlagUrl} {imgUrl} />
+  <FlagDisplay {showOverlay} {overlayFlagUrl} {imgUrl} />
 
   <div class="flex gap-2 w-full justify-center items-center">
     <CountrySearch
@@ -107,6 +108,7 @@
       disabled={gameOver || gameWon}
       bind:guessString
       onsubmit={checkGuess}
+      easyMode={true}
       guessedCountries={guessesState.guessedCountries}
     />
     <button
@@ -114,7 +116,7 @@
         gameWon ||
         guessString.trim().length === 0 ||
         guessesState.guessedCountries.includes(guessString.trim())}
-      class="bg-secondary-100 min-h-11 p-2 rounded self-start text-secondary-900 disabled:bg-secondary-200/[0.5] disabled:text-secondary-600 disabled:cursor-not-allowed
+      class="bg-secondary-100 min-h-11 p-2 rounded self-start text-secondary-900 disabled:bg-secondary-200/[0.5] disabled:text-secondary-500 disabled:cursor-not-allowed
 		"
       onclick={checkGuess}
       >{guessesState.guessedCountries.includes(guessString.trim())

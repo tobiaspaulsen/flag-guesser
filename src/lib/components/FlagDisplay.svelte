@@ -1,11 +1,9 @@
 <script lang="ts">
   let {
-    guessCountryCode,
     showOverlay,
     overlayFlagUrl,
     imgUrl
   }: {
-    guessCountryCode: string | undefined;
     showOverlay: boolean;
     overlayFlagUrl: string;
     imgUrl: string | undefined;
@@ -16,7 +14,7 @@
   class="flex flex-row justify-center items-center border-2 border-solid border-primary-200 rounded-lg bg-primary-50/20 relative overflow-hidden"
   style="width: 400px; height: 300px;"
 >
-  {#if guessCountryCode !== undefined}
+  {#if imgUrl !== undefined}
     {#if showOverlay}
       <img
         src={overlayFlagUrl}

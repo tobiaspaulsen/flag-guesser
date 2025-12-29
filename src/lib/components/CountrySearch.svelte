@@ -7,12 +7,14 @@
     countriesState,
     guessString = $bindable(),
     onsubmit,
+    easyMode,
     guessedCountries = [],
-    disabled = false
+    disabled = false,
   }: {
     countriesState: ICountriesState;
     guessString: string;
     onsubmit?: () => void;
+    easyMode: boolean;
     guessedCountries?: string[];
     disabled?: boolean;
   } = $props();
@@ -41,7 +43,6 @@
   let searchInput: HTMLInputElement = $state()!;
   let formElement: HTMLFormElement = $state()!;
   let listContainer: HTMLUListElement = $state()!;
-  let listScrollable: boolean = $state(false);
 
   // Auto-scroll to highlighted item
   $effect(() => {
@@ -233,6 +234,7 @@
         {#each filteredCountries as countryObj, i}
           <CountryListItem
             countryName={countryObj.countryName}
+            withImage={easyMode}
             countryImgSrc={countryObj.countryImgSrc}
             countryHtmlListItem={countryObj.countryHtmlListItem}
             highlighted={i === highlightIndex}

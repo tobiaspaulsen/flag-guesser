@@ -29,7 +29,7 @@
     </div>
     <button
       onclick={restartGame}
-      class="bg-secondary-100 text-secondary-900 px-6 py-3 rounded-lg font-semibold hover:bg-secondary-200 transition-colors"
+      class="bg-secondary-100 text-primary-900 px-6 py-3 rounded-lg font-semibold hover:bg-secondary-200 transition-colors"
     >
       Play Random Mode
     </button>
