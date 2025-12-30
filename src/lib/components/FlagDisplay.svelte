@@ -11,8 +11,7 @@
 </script>
 
 <div
-  class="flex flex-row justify-center items-center border-2 border-solid border-primary-100 rounded-lg bg-primary-900/20 relative overflow-hidden"
-  style="width: 400px; height: 300px;"
+  class="flex flex-row justify-center items-center border-2 border-solid border-primary-100 rounded-lg bg-primary-900/20 relative overflow-hidden w-full max-w-[400px] aspect-[4/3]"
 >
   {#if imgUrl !== undefined}
     {#if showOverlay}

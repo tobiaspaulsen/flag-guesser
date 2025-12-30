@@ -17,7 +17,7 @@
       <div class="w-20 flex items-center justify-center bg-primary-100/15 p-2">
         {#if guessesState.guessesList[i]?.img}
           <img
-            class="h-full w-full object-contain rounded"
+            class="h-full w-full object-cover rounded-sm"
             src={guessesState.guessesList[i].img.toDataURL()}
             alt="Flag of {guessesState.guessesList[i].country}"
           />
