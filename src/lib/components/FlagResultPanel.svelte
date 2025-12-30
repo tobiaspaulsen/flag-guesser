@@ -16,7 +16,7 @@
 
 {#if gameWon || gameOver}
   <div class="w-full bg-primary-900 border-2 border-primary-100 rounded-lg p-6 text-center">
-    <div class="text-2xl font-bold mb-2" class:text-secondary-600={gameWon} class:text-primary-50={!gameWon}>
+    <div class="text-2xl font-bold mb-2" class:text-secondary-600={gameWon} class:text-primary-50={gameOver}>
       {gameWon ? 'Congratulations!' : 'Game Over'}
     </div>
     <div class="text-primary-50 mb-4">
