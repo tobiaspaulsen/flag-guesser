@@ -34,7 +34,7 @@
   onkeydown={handleKeydown}
 >
   {#if withImage}
-    <img class="h-8 w-auto" src={countryImgSrc} alt="Flag of {countryName}" />
+    <img class="h-8 w-auto rounded-sm" src={countryImgSrc} alt="Flag of {countryName}" />
   {/if}
   <div class="leading-snug">
     {@html countryHtmlListItem}

@@ -26,14 +26,14 @@
       }),
       {
         shouldSort: true,
-        threshold: 0.4,
+        threshold: 0.2,
         distance: 100,
         minMatchCharLength: 1,
         keys: ['search']
       }
     )
   );
-  /* FILTERING countries DATA BASED ON INPUT */
+
   let filteredCountries: {
     countryName: string;
     countryImgSrc: string;
@@ -209,9 +209,9 @@
   onsubmit={handleSubmit}
   class="w-full relative"
 >
-  <div class="autocomplete">
+  <div>
     <input
-      class="h-11 p-2 rounded w-full placeholder:text-primary-100 bg-primary-900 text-primary-50 border-2 border-primary-100/70 focus:border-secondary-900/70 focus:outline-none transition-colors"
+      class="w-full rounded p-2 placeholder:text-primary-100 bg-primary-900 text-primary-50 border-2 border-primary-100/70 focus:border-secondary-900/70 focus:outline-none transition-colors"
       id="country-input"
       type="text"
       placeholder="Search for a country..."
@@ -224,12 +224,10 @@
     />
   </div>
   {#if filteredCountries.length > 0}
-    <div class="absolute w-full top-11 rounded-b-lg overflow-hidden shadow-2xl border border-t-0 border-primary-200">
+    <div class="absolute w-full top-11 rounded overflow-hidden shadow-2xl border border-t-0 border-primary-200">
       <ul
         bind:this={listContainer}
-        id="autocomplete-items-list"
         class="divide-y w-full divide-primary-200 m-0 max-h-[13.5rem] overflow-y-auto bg-primary-900 scrollbar-thin"
-        style="scrollbar-width: thin; scrollbar-color: #6B7280 #374151;"
       >
         {#each filteredCountries as countryObj, i}
           <CountryListItem
@@ -242,7 +240,6 @@
           />
         {/each}
       </ul>
-      <div class="h-4 bg-gradient-to-t from-primary-900 to-transparent pointer-events-none absolute bottom-0 left-0 right-0"></div>
     </div>
   {/if}
 </form>
