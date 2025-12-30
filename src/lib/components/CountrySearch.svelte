@@ -13,25 +13,20 @@
     countriesState: ICountriesState;
     checkGuess: (guess: string) => void;
     easyMode: boolean;
-    guessesState: IGuessesState
+    guessesState: IGuessesState;
     disabled?: boolean;
   } = $props();
 
   let guessString: string = $state('');
 
   const db = $derived(
-    new Fuse(
-      countriesState.countries.map((d) => {
-        return { ...d, search: d.name };
-      }),
-      {
-        shouldSort: true,
-        threshold: 0.2,
-        distance: 100,
-        minMatchCharLength: 1,
-        keys: ['search']
-      }
-    )
+    new Fuse(countriesState.countries, {
+      shouldSort: true,
+      threshold: 0.2,
+      distance: 100,
+      minMatchCharLength: 1,
+      keys: ['name']
+    })
   );
 
   let filteredCountries: {
@@ -44,7 +39,7 @@
   let listContainer: HTMLUListElement = $state()!;
 
   $effect(() => {
-    if (highlightIndex !== null && listContainer) {
+    if (listContainer) {
       const highlightedElement = listContainer.children[highlightIndex] as HTMLElement;
       highlightedElement?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
@@ -86,31 +81,35 @@
   };
 
   const navigateList = (e: KeyboardEvent) => {
-    if (disabled)
-      return;
+    if (disabled) return;
 
     if (filteredCountries.length === 0 && !guessString && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+      e.preventDefault();
       filterCountries();
       if (e.key === 'ArrowDown') {
-        highlightIndex = -1;
+        highlightIndex = 0;
+      } else {
+        highlightIndex = filteredCountries.length - 1;
       }
+      return;
     }
 
+    if (filteredCountries.length === 0) return;
     const len = filteredCountries.length;
 
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        highlightIndex = highlightIndex === null ? 0 : (highlightIndex + 1) % len;
+        highlightIndex = (highlightIndex + 1) % len;
         break;
       case 'ArrowUp':
         e.preventDefault();
-        highlightIndex = highlightIndex === null ? len - 1 : (highlightIndex - 1 + len) % len;
+        highlightIndex = (highlightIndex - 1 + len) % len;
         break;
       case 'Enter':
         e.preventDefault();
         e.stopPropagation();
-        if (highlightIndex !== null && guessesState.guessedCountries.some(g => g.toLowerCase() === guessString.trim().toLowerCase()) === false) {
+        if (filteredCountries[highlightIndex]) {
           selectCountry(filteredCountries[highlightIndex].countryName);
         }
         break;
@@ -122,7 +121,10 @@
 
   const handleSubmit = (e: Event) => {
     e.preventDefault();
-    if (disabled || !guessString.trim() || filteredCountries.length > 0) return;
+    const isDuplicate = guessesState.guessedCountries.some(
+      (g) => g.toLowerCase() === guessString.trim().toLowerCase()
+    );
+    if (disabled || !guessString.trim() || filteredCountries.length > 0 || isDuplicate) return;
     checkGuess(guessString);
   };
 
@@ -153,6 +155,7 @@
       bind:value={guessString}
       oninput={filterCountries}
       onfocus={filterCountries}
+      onclick={filterCountries}
       onkeydown={navigateList}
     />
   </div>
@@ -175,13 +178,13 @@
     </div>
   {/if}
 </form>
-    <button
-      disabled={
-        disabled ||
-        guessString.trim().length === 0 ||
-        guessesState.guessedCountries.some(g => g.toLowerCase() === guessString.trim().toLowerCase())}
-        class="bg-secondary-900 h-11 p-2 px-4 rounded self-start text-white font-semibold hover:scale-[1.02] active:scale-95 transition-all disabled:bg-secondary-900/30 disabled:text-secondary-100/50 disabled:cursor-not-allowed"
-      onclick={() => checkGuess(guessString)}
-    >{'Guess'}
-    </button>
+  <button
+    disabled={disabled ||
+      guessString.trim().length === 0 ||
+      guessesState.guessedCountries.some((g) => g.toLowerCase() === guessString.trim().toLowerCase())}
+    class="bg-secondary-900 h-11 p-2 px-4 rounded self-start text-white font-semibold hover:scale-[1.02] active:scale-95 transition-all disabled:bg-secondary-900/30 disabled:text-secondary-100/50 disabled:cursor-not-allowed"
+    onclick={() => checkGuess(guessString)}
+  >
+    Guess
+  </button>
 </div>
