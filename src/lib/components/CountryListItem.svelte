@@ -3,20 +3,18 @@
     countryName,
     withImage,
     countryImgSrc,
-    countryHtmlListItem,
     highlighted,
     onclick
   }: {
     countryName: string;
     withImage: boolean;
     countryImgSrc: string;
-    countryHtmlListItem: string;
     highlighted: boolean;
     onclick: () => void;
   } = $props();
 
   const handleKeydown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === 'Enter') {
       e.preventDefault();
       onclick();
     }
@@ -36,7 +34,6 @@
   {#if withImage}
     <img class="h-8 w-auto rounded-sm" src={countryImgSrc} alt="Flag of {countryName}" />
   {/if}
-  <div class="leading-snug">
-    {@html countryHtmlListItem}
-  </div>
+
+  {countryName}
 </li>

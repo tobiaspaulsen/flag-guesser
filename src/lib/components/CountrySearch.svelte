@@ -1,23 +1,23 @@
 <script lang="ts">
   import Fuse from 'fuse.js';
-  import type { ICountriesState } from '$lib/state.svelte';
+  import type { ICountriesState, IGuessesState } from '$lib/state.svelte';
   import CountryListItem from './CountryListItem.svelte';
 
   let {
     countriesState,
-    guessString = $bindable(),
-    onsubmit,
+    checkGuess,
     easyMode,
-    guessedCountries = [],
+    guessesState,
     disabled = false,
   }: {
     countriesState: ICountriesState;
-    guessString: string;
-    onsubmit?: () => void;
+    checkGuess: (guess: string) => void;
     easyMode: boolean;
-    guessedCountries?: string[];
+    guessesState: IGuessesState
     disabled?: boolean;
   } = $props();
+
+  let guessString: string = $state('');
 
   const db = $derived(
     new Fuse(
@@ -37,172 +37,105 @@
   let filteredCountries: {
     countryName: string;
     countryImgSrc: string;
-    countryHtmlListItem: string;
   }[] = $state([]);
-  let highlightIndex: number | null = $state(null);
+  let highlightIndex: number = $state(0);
   let searchInput: HTMLInputElement = $state()!;
   let formElement: HTMLFormElement = $state()!;
   let listContainer: HTMLUListElement = $state()!;
 
-  // Auto-scroll to highlighted item
   $effect(() => {
     if (highlightIndex !== null && listContainer) {
       const highlightedElement = listContainer.children[highlightIndex] as HTMLElement;
-      if (highlightedElement) {
-        highlightedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      }
+      highlightedElement?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
+  });
+
+  const mapToFilteredCountry = (country: { name: string; countryCode: string }) => ({
+    countryName: country.name,
+    countryImgSrc: `/countries/png/${country.countryCode}.png`
   });
 
   const filterCountries = (): void => {
     if (disabled) {
       filteredCountries = [];
-      highlightIndex = null;
+      highlightIndex = 0;
       return;
     }
+
     if (!guessString) {
       filteredCountries = countriesState.countries
-        .filter((country) => !guessedCountries.includes(country.name))
-        .map((country) => {
-          const countryName = country.name;
-          let countryImgSrc = `/countries/png/${country.countryCode}.png`;
-          return {
-            countryName: countryName,
-            countryImgSrc,
-            countryHtmlListItem: makeMatchBold(countryName)
-          };
-        });
-      filteredCountries.sort((a, b) => (a.countryName > b.countryName ? 1 : -1));
+        .filter((country) => !guessesState.guessedCountries.includes(country.name))
+        .map(mapToFilteredCountry);
     } else {
-      filteredCountries = db
-        .search(guessString)
-        .filter(({ item: country }) => !guessedCountries.includes(country.name))
-        .map(({ item: country }) => {
-          const countryName = country.name;
-          let countryImgSrc = `/countries/png/${country.countryCode}.png`;
-          return {
-            countryName: countryName,
-            countryImgSrc,
-            countryHtmlListItem: makeMatchBold(countryName)
-          };
-        });
-    }
-    
-    // Auto-select first item when filtering
-    if (filteredCountries.length > 0) {
-      highlightIndex = 0;
-    } else {
-      highlightIndex = null;
+      filteredCountries = db.search(guessString)
+        .filter(({ item: country }) => !guessesState.guessedCountries.includes(country.name))
+        .map(({ item: country }) => mapToFilteredCountry(country));
     }
   };
 
-  $effect(() => {
-    if (!guessString) {
-      filteredCountries = [];
-      highlightIndex = null;
-    }
-  });
-
-  const clearInput = () => {
-    if (disabled) return;
-    guessString = '';
-    searchInput.focus();
-  };
-
-  const setInputVal = (countryName: string) => {
-    if (disabled) return;
-    guessString = removeBold(countryName);
+  const closeDropdown = () => {
     filteredCountries = [];
-    highlightIndex = null;
-    searchInput.focus();
+    highlightIndex = 0;
   };
 
-  const submitValue = () => {
-    if (guessString) {
-      setTimeout(clearInput, 1000);
-    } else {
-      alert("You didn't type anything.");
-    }
+  const selectCountry = (countryName: string) => {
+    guessString = '';
+    highlightIndex = 0;
+    closeDropdown();
+    checkGuess(countryName);
   };
-
-  const makeMatchBold = (str: string) => {
-    // replace part of (country name === guessString) with strong tags
-    let matched = str.substring(0, guessString.length);
-    let makeBold = `<strong>${matched}</strong>`;
-    let boldedMatch = str.replace(matched, makeBold);
-    return boldedMatch;
-  };
-
-  const removeBold = (str: string) => {
-    // replace < and > all characters between
-    return str.replace(/<(.)*?>/g, '');
-  };
-
-  /* NAVIGATING OVER THE LIST OF COUNTRIES W HIGHLIGHTING */
 
   const navigateList = (e: KeyboardEvent) => {
-    if (disabled) return;
-    // If dropdown is closed and user presses down, reopen it
-    if (filteredCountries.length === 0 && e.key === 'ArrowDown') {
-      e.preventDefault();
-      filterCountries();
+    if (disabled)
       return;
+
+    if (filteredCountries.length === 0 && !guessString && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+      filterCountries();
+      if (e.key === 'ArrowDown') {
+        highlightIndex = -1;
+      }
     }
 
-    // Only handle other navigation when dropdown is visible
-    if (filteredCountries.length === 0) return;
+    const len = filteredCountries.length;
 
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (highlightIndex === null || highlightIndex >= filteredCountries.length - 1) {
-        highlightIndex = 0;
-      } else {
-        highlightIndex += 1;
-      }
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (highlightIndex === null || highlightIndex <= 0) {
-        highlightIndex = filteredCountries.length - 1;
-      } else {
-        highlightIndex -= 1;
-      }
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      e.stopPropagation();
-      if (highlightIndex !== null && filteredCountries[highlightIndex]) {
-        setInputVal(filteredCountries[highlightIndex].countryHtmlListItem);
-      }
-    } else if (e.key === 'Escape') {
-      filteredCountries = [];
-      highlightIndex = null;
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        highlightIndex = highlightIndex === null ? 0 : (highlightIndex + 1) % len;
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        highlightIndex = highlightIndex === null ? len - 1 : (highlightIndex - 1 + len) % len;
+        break;
+      case 'Enter':
+        e.preventDefault();
+        e.stopPropagation();
+        if (highlightIndex !== null && guessesState.guessedCountries.some(g => g.toLowerCase() === guessString.trim().toLowerCase()) === false) {
+          selectCountry(filteredCountries[highlightIndex].countryName);
+        }
+        break;
+      case 'Escape':
+        closeDropdown();
+        break;
     }
   };
 
   const handleSubmit = (e: Event) => {
     e.preventDefault();
-    if (disabled) return;
-    // Only submit if there's a guess and dropdown is not visible or no item is highlighted
-    if (guessString.trim().length > 0 && (filteredCountries.length === 0 || highlightIndex === null)) {
-      if (onsubmit) {
-        onsubmit();
-      } else {
-        submitValue();
-      }
-    }
+    if (disabled || !guessString.trim() || filteredCountries.length > 0) return;
+    checkGuess(guessString);
   };
 
-  /* CLICK OUTSIDE TO CLOSE */
   const handleClickOutside = (e: MouseEvent) => {
-    if (disabled) return;
-    if (formElement && !formElement.contains(e.target as Node)) {
-      filteredCountries = [];
-      highlightIndex = null;
+    if (!disabled && formElement && !formElement.contains(e.target as Node)) {
+      closeDropdown();
     }
   };
 </script>
 
 <svelte:window onclick={handleClickOutside} />
 
+<div class="flex gap-2 w-full justify-center items-center">
 <form
   bind:this={formElement}
   autocomplete="off"
@@ -234,12 +167,21 @@
             countryName={countryObj.countryName}
             withImage={easyMode}
             countryImgSrc={countryObj.countryImgSrc}
-            countryHtmlListItem={countryObj.countryHtmlListItem}
             highlighted={i === highlightIndex}
-            onclick={() => setInputVal(countryObj.countryHtmlListItem)}
+            onclick={() => selectCountry(countryObj.countryName)}
           />
         {/each}
       </ul>
     </div>
   {/if}
 </form>
+    <button
+      disabled={
+        disabled ||
+        guessString.trim().length === 0 ||
+        guessesState.guessedCountries.some(g => g.toLowerCase() === guessString.trim().toLowerCase())}
+        class="bg-secondary-900 h-11 p-2 px-4 rounded self-start text-white font-semibold hover:scale-[1.02] active:scale-95 transition-all disabled:bg-secondary-900/30 disabled:text-secondary-100/50 disabled:cursor-not-allowed"
+      onclick={() => checkGuess(guessString)}
+    >{'Guess'}
+    </button>
+</div>

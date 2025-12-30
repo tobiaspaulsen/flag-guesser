@@ -21,7 +21,6 @@
     countriesState,
     targetCountryState
   }: { guessesState: IGuessesState; countriesState: ICountriesState; targetCountryState: ITargetCountryState } = $props();
-  let guessString: string = $state('');
   let guessCountryCode: string | undefined = $state();
 
   let currentResult: Image | undefined = $state();
@@ -33,19 +32,18 @@
     }
   });
 
-  const checkGuess = async () => {
-    if (guessString.trim().toLowerCase() === targetCountryState.targetCountry?.name.trim().toLowerCase()) {
+  const checkGuess = async (guess: string) => {
+    if (guess.trim().toLowerCase() === targetCountryState.targetCountry?.name.trim().toLowerCase()) {
       gameWon = true;
       if (targetCountryState.isTodaysFlag) {
         targetCountryState.markTodayCompleted();
       }
     }
     guessCountryCode = countriesState.countries.find(
-      (country) => country.name.toLowerCase() === guessString.trim().toLowerCase()
+      (country) => country.name.toLowerCase() === guess.trim().toLowerCase()
     )?.countryCode;
 
     if (!guessCountryCode) {
-      console.error('Country code not found for:', guessString);
       return;
     }
 
@@ -63,28 +61,21 @@
       
       currentResult = getImageUnion(currentResult, intersect.Image);
 
-      guessesState.addNewGuess({ country: guessString, score: `${intersect.percent}`, img: image2, correct: gameWon});
+      guessesState.addNewGuess({ country: guess, score: `${intersect.percent}`, img: image2, correct: gameWon});
 
       if (guessesState.guessesList.length >= 5) {
         gameOver = true;
         targetCountryState.markTodayCompleted();
         imgUrl = targetCountryState.targetFlagImgUrl;
       }
-      guessString = '';
-      const guessInput = document.getElementById('country-input'); // TODO: DO this better?
-      if (guessInput) {
-        guessInput.innerHTML = guessString;
-      }
     } catch (error) {
       console.error('Error loading or processing images:', error);
-      guessString = '';
     }
   };
   
   const restartGame = () => {
     gameOver = false;
     gameWon = false;
-    guessString = '';
     guessCountryCode = undefined;
     currentResult = undefined;
     showOverlay = false;
@@ -101,26 +92,13 @@
 
   <FlagDisplay {showOverlay} {overlayFlagUrl} {imgUrl} />
 
-  <div class="flex gap-2 w-full justify-center items-center">
-    <CountrySearch
-      {countriesState}
-      disabled={gameOver || gameWon}
-      bind:guessString
-      onsubmit={checkGuess}
-      easyMode={true}
-      guessedCountries={guessesState.guessedCountries}
-    />
-    <button
-      disabled={gameOver ||
-        gameWon ||
-        guessString.trim().length === 0 ||
-        guessesState.guessedCountries.includes(guessString.trim())}
-        class="bg-secondary-900 h-11 p-2 px-4 rounded self-start text-white font-semibold hover:scale-[1.02] active:scale-95 transition-all disabled:bg-secondary-900/30 disabled:text-secondary-100/50 disabled:cursor-not-allowed"
-      onclick={checkGuess}
-      >{guessesState.guessedCountries.includes(guessString.trim()) // TODO: Do something better here
-        ? 'Already guessed'
-        : 'Guess'}</button
-    >
-  </div>
+  <CountrySearch
+    {countriesState}
+    disabled={gameOver || gameWon}
+    checkGuess={checkGuess}
+    easyMode={true}
+    guessesState={guessesState}
+  />
+
   <AttemptList {guessesState} />
 </div>
