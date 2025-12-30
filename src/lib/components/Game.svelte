@@ -36,7 +36,6 @@
   const checkGuess = async () => {
     if (guessString.trim().toLowerCase() === targetCountryState.targetCountry?.name.trim().toLowerCase()) {
       gameWon = true;
-      // Mark today's flag as completed if it was today's flag
       if (targetCountryState.isTodaysFlag) {
         targetCountryState.markTodayCompleted();
       }
@@ -64,7 +63,7 @@
       
       currentResult = getImageUnion(currentResult, intersect.Image);
 
-      guessesState.addNewGuess({ country: guessString, score: `${intersect.percent}`, img: image2 });
+      guessesState.addNewGuess({ country: guessString, score: `${intersect.percent}`, img: image2, correct: gameWon});
 
       if (guessesState.guessesList.length >= 5) {
         gameOver = true;
@@ -72,7 +71,7 @@
         imgUrl = targetCountryState.targetFlagImgUrl;
       }
       guessString = '';
-      const guessInput = document.getElementById('country-input');
+      const guessInput = document.getElementById('country-input'); // TODO: DO this better?
       if (guessInput) {
         guessInput.innerHTML = guessString;
       }
@@ -118,7 +117,7 @@
         guessesState.guessedCountries.includes(guessString.trim())}
         class="bg-secondary-900 h-11 p-2 px-4 rounded self-start text-white font-semibold hover:scale-[1.02] active:scale-95 transition-all disabled:bg-secondary-900/30 disabled:text-secondary-100/50 disabled:cursor-not-allowed"
       onclick={checkGuess}
-      >{guessesState.guessedCountries.includes(guessString.trim())
+      >{guessesState.guessedCountries.includes(guessString.trim()) // TODO: Do something better here
         ? 'Already guessed'
         : 'Guess'}</button
     >

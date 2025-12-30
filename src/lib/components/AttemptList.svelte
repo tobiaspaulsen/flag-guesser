@@ -25,18 +25,27 @@
           <div class="text-primary-50/30">{i + 1}</div>
         {/if}
       </div>
-      <div class="grow flex items-center px-4 text-primary-50">
+      {console.log(guessesState.guessesList[i])}
+      {#if guessesState.guessesList[i]?.correct}
+        <div class="grow flex items-center px-4 text-secondary-900 font-bold">
+            {guessesState.guessesList[i].country}
+        </div>
+      {:else}
+        <div class="grow flex items-center px-4 text-primary-50">
         {#if guessesState.guessesList[i]?.country}
-          {guessesState.guessesList[i].country}
+            {guessesState.guessesList[i].country}
         {/if}
-      </div>
+        </div>
+      {/if}
       <div
         class="w-20 flex items-center justify-center text-center font-semibold bg-primary-100/15"
       >
         {#if guessesState.guessesList[i]?.score}
-          <span class="text-secondary-600">{guessesState.guessesList[i].score}%</span>
-        {:else}
-          <span class="text-primary-50/30">-</span>
+          {#if guessesState.guessesList[i]?.correct}
+            <span class="text-secondary-900 font-bold">{guessesState.guessesList[i].score}%</span>
+          {:else}
+            <span class="text-primary-50">{guessesState.guessesList[i].score}%</span>
+          {/if}
         {/if}
       </div>
     </div>

@@ -9,6 +9,7 @@ export interface IGuess {
   country: string;
   score: string;
   img: Image;
+  correct: boolean;
 }
 export interface ITodaysFlag {
   readonly country: Country;
