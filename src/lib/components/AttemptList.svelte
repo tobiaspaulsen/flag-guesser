@@ -25,7 +25,6 @@
           <div class="text-primary-50/30">{i + 1}</div>
         {/if}
       </div>
-      {console.log(guessesState.guessesList[i])}
       {#if guessesState.guessesList[i]?.correct}
         <div class="grow flex items-center px-4 text-secondary-900 font-bold">
             {guessesState.guessesList[i].country}
