@@ -6,14 +6,10 @@ export type Country = {
 };
 
 export interface IGuess {
-  country: string;
-  score: string;
+  country: Country;
+  score: number;
   img: Image;
   correct: boolean;
-}
-export interface ITodaysFlag {
-  readonly country: Country;
-  readonly flagImgUrl: string;
 }
 
 export function createCountriesState(): ICountriesState {
@@ -46,7 +42,17 @@ export interface IGuessesState {
   readonly guessesList: IGuess[];
   addNewGuess: (guess: IGuess) => void;
   resetGuesses: () => void;
-  readonly guessedCountries: string[];
+  readonly guessedCountries: Country[];
+}
+
+export interface PersistedGameState {
+  date: string;
+  targetCountryCode: string;
+  won: boolean;
+  guesses: {
+    countryCode: string;
+    countryName: string;
+  }[];
 }
 
 export interface ICountriesState {
@@ -55,11 +61,10 @@ export interface ICountriesState {
 }
 
 export interface ITargetCountryState {
-  readonly targetCountry: Country | undefined;
+  readonly targetCountry: Country;
   readonly targetFlagImgUrl: string;
-  readonly isTodaysFlag: boolean;
+  readonly isDailyGame: boolean;
   resetTarget: () => void;
-  markTodayCompleted: () => void;
 }
 
 function getTodaysFlagIndex(totalCountries: number): number {
@@ -69,31 +74,34 @@ function getTodaysFlagIndex(totalCountries: number): number {
   return diffDays % totalCountries;
 }
 
-function isTodayCompleted(): boolean {
-  if (typeof window === 'undefined') return false;
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  const completedDate = localStorage.getItem('lastFlagCompleted');
-  return completedDate === today;
+function getTodayString(): string {
+  return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 }
 
-function markTodayCompleted(): void {
+export function loadLatestDailyGameState(): PersistedGameState | null {
+  if (typeof window === 'undefined') return null;
+  const today = getTodayString();
+  const stored = localStorage.getItem('dailyGameState');
+  if (!stored) return null;
+  
+  try {
+    const parsed: PersistedGameState = JSON.parse(stored);
+    return parsed.date === today ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveGameState(state: PersistedGameState): void {
   if (typeof window === 'undefined') return;
-  const today = new Date().toISOString().split('T')[0];
-  localStorage.setItem('lastFlagCompleted', today);
+  localStorage.setItem('dailyGameState', JSON.stringify(state));
 }
 
 export function createTargetCountryState(countriesState: ICountriesState): ITargetCountryState {
-  
-  const todayCompleted = isTodayCompleted();
-  let targetIndex: number;
-  if (todayCompleted) {
-    targetIndex = Math.floor(Math.random() * countriesState.countries.length);
-  } else {
-    targetIndex = getTodaysFlagIndex(countriesState.countries.length);
-  }
+  const targetIndex = getTodaysFlagIndex(countriesState.countries.length);
 
   let targetCountry = $state(countriesState.countries[targetIndex]);
-  let isTodaysFlag = $state(!todayCompleted);
+  let isDailyGameState = $state(true);
 
   return {
     get targetCountry() {
@@ -102,19 +110,29 @@ export function createTargetCountryState(countriesState: ICountriesState): ITarg
     get targetFlagImgUrl() {
       return targetCountry ? `/countries/png/${targetCountry.countryCode}.png` : '';
     },
-    get isTodaysFlag() {
-      return isTodaysFlag;
+    get isDailyGame() {
+      return isDailyGameState;
     },
     resetTarget: () => {
-      isTodaysFlag = false;
+      isDailyGameState = false;
       if (countriesState.countries.length > 0) {
         targetCountry = countriesState.countries[Math.floor(Math.random() * countriesState.countries.length)];
       }
-    },
-    markTodayCompleted: () => {
-      markTodayCompleted();
     }
   };
+}
+
+export const persistGameState = (targetCountryState: ITargetCountryState, guesses: IGuess[]): void => {
+  const gameState: PersistedGameState = {
+    date: getTodayString(),
+    targetCountryCode: targetCountryState.targetCountry.countryCode,
+    won: guesses.some(g => g.correct),
+    guesses: guesses.map(g => ({
+      countryCode: g.country.countryCode,
+      countryName: g.country.name
+    }))
+  };
+  saveGameState(gameState);
 }
 
 export function createGuessesState(): IGuessesState {

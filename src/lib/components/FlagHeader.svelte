@@ -5,13 +5,7 @@
 </script>
 
 <div class="flex flex-col items-center gap-1">
-  {#if !targetCountryState.isTodaysFlag}
-    <div class="text-s text-secondary-600 flex items-center gap-1">
-      <span>✓</span>
-      <span>Today's flag completed</span>
-    </div>
-  {/if}
-  <div class="text-xl text-primary-50 font-medium">
-    {targetCountryState.isTodaysFlag ? "Today's Flag" : 'Random Flag'}
+  <div class="text-xl text-secondary-600 font-medium">
+    {targetCountryState.isDailyGame ? "Today's Flag" : 'Random Flag'}
   </div>
 </div>

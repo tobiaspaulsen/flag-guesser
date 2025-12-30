@@ -1,30 +1,54 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { getImageIntersect, getImageUnion } from '$lib/getImageIntersect';
   import { Image } from 'image-js';
-  import { type ICountriesState, type IGuessesState, type ITargetCountryState } from '$lib/state.svelte';
+  import { persistGameState, type ICountriesState, type IGuessesState, type ITargetCountryState } from '$lib/state.svelte';
   import CountrySearch from './CountrySearch.svelte';
   import AttemptList from './AttemptList.svelte';
   import FlagHeader from './FlagHeader.svelte';
   import FlagResultPanel from './FlagResultPanel.svelte';
   import FlagDisplay from './FlagDisplay.svelte';
+  import type { PreviousGame } from '$lib/utils';
 
-  // Game state
   let gameOver: boolean = $state(false);
   let gameWon: boolean = $state(false);
   
-  // Overlay animation state
   let showOverlay: boolean = $state(false);
-  let overlayFlagUrl: string = $state('');
+  let guessedFlagUrl: string = $state('');
 
   let {
     guessesState,
     countriesState,
-    targetCountryState
-  }: { guessesState: IGuessesState; countriesState: ICountriesState; targetCountryState: ITargetCountryState } = $props();
+    targetCountryState,
+    previousGameState,
+  }: { guessesState: IGuessesState; countriesState: ICountriesState; targetCountryState: ITargetCountryState; previousGameState: PreviousGame | null } = $props();
   let guessCountryCode: string | undefined = $state();
 
   let currentResult: Image | undefined = $state();
   let imgUrl: string | undefined = $derived(currentResult?.toDataURL());
+
+  untrack(() => {
+    if (previousGameState) {
+      for (const pastGuess of previousGameState.guesses) {
+        guessesState.addNewGuess({
+          country: pastGuess.country,
+          score: pastGuess.score,
+          img: pastGuess.img,
+          correct: pastGuess.correct
+        });
+      }
+
+      currentResult = previousGameState.resultImage;
+
+      if (previousGameState.won) {
+        gameWon = true;
+      } 
+      if (previousGameState.guesses.length >= 5) {
+        gameOver = true;
+        imgUrl = targetCountryState.targetFlagImgUrl;
+      }
+    }
+  });
 
   $effect(() => {
     if (targetCountryState.targetCountry) {
@@ -35,37 +59,37 @@
   const checkGuess = async (guess: string) => {
     if (guess.trim().toLowerCase() === targetCountryState.targetCountry?.name.trim().toLowerCase()) {
       gameWon = true;
-      if (targetCountryState.isTodaysFlag) {
-        targetCountryState.markTodayCompleted();
-      }
     }
-    guessCountryCode = countriesState.countries.find(
+    let guessedCountry = countriesState.countries.find(
       (country) => country.name.toLowerCase() === guess.trim().toLowerCase()
-    )?.countryCode;
+    );
 
-    if (!guessCountryCode) {
+    if (!guessedCountry) {
       return;
     }
 
     try {
-      overlayFlagUrl = `/countries/png/${guessCountryCode}.png`;
+      guessedFlagUrl = `/countries/png/${guessedCountry.countryCode}.png`;
       showOverlay = true;
       setTimeout(() => {
         showOverlay = false;
       }, 800);
       
       let image1: Image = await Image.load(targetCountryState.targetFlagImgUrl);
-      let image2: Image = await Image.load(overlayFlagUrl);
+      let image2: Image = await Image.load(guessedFlagUrl);
       
       let intersect = getImageIntersect(image1, image2, 0.5);
       
       currentResult = getImageUnion(currentResult, intersect.Image);
 
-      guessesState.addNewGuess({ country: guess, score: `${intersect.percent}`, img: image2, correct: gameWon});
+      guessesState.addNewGuess({ country: guessedCountry, score: intersect.percent, img: image2, correct: gameWon});
+
+      if (targetCountryState.isDailyGame) {
+        persistGameState(targetCountryState, guessesState.guessesList);
+      }
 
       if (guessesState.guessesList.length >= 5) {
         gameOver = true;
-        targetCountryState.markTodayCompleted();
         imgUrl = targetCountryState.targetFlagImgUrl;
       }
     } catch (error) {
@@ -79,7 +103,7 @@
     guessCountryCode = undefined;
     currentResult = undefined;
     showOverlay = false;
-    overlayFlagUrl = '';
+    guessedFlagUrl = '';
     guessesState.resetGuesses();
     targetCountryState.resetTarget();
   };
@@ -90,7 +114,7 @@
 
   <FlagResultPanel {gameWon} {gameOver} {targetCountryState} {restartGame} />
 
-  <FlagDisplay {showOverlay} {overlayFlagUrl} {imgUrl} />
+  <FlagDisplay {showOverlay} overlayFlagUrl={guessedFlagUrl} imgUrl={imgUrl} />
 
   <CountrySearch
     {countriesState}
