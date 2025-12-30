@@ -8,43 +8,33 @@
   <div class="text-primary-100 text-sm font-semibold uppercase tracking-wide">Your guesses</div>
 
   {#each Array(5) as _, i}
+    {@const guess = guessesState.guessesList[i]}
+    {@const isCorrect = guess?.correct}
     <div
       class="flex h-14 rounded-lg overflow-hidden border border-primary-200 transition-all"
-      class:bg-primary-900={guessesState.guessesList[i]}
-      class:bg-transparent={!guessesState.guessesList[i]}
-      class:border-dashed={!guessesState.guessesList[i]}
+      class:bg-primary-900={guess}
+      class:bg-transparent={!guess}
+      class:border-dashed={!guess}
     >
       <div class="w-20 flex items-center justify-center bg-primary-100/15 p-2">
-        {#if guessesState.guessesList[i]?.img}
+        {#if guess?.img}
           <img
             class="h-full object-cover rounded-sm"
-            src={guessesState.guessesList[i].img.toDataURL()}
-            alt="Flag of {guessesState.guessesList[i].country}"
+            src={guess.img.toDataURL()}
+            alt="Flag of {guess.country}"
           />
         {:else}
           <div class="text-primary-50/30">{i + 1}</div>
         {/if}
       </div>
-      {#if guessesState.guessesList[i]?.correct}
-        <div class="grow flex items-center px-4 text-secondary-900 font-bold">
-            {guessesState.guessesList[i].country}
-        </div>
-      {:else}
-        <div class="grow flex items-center px-4 text-primary-50">
-        {#if guessesState.guessesList[i]?.country}
-            {guessesState.guessesList[i].country}
-        {/if}
-        </div>
-      {/if}
-      <div
-        class="w-20 flex items-center justify-center text-center font-semibold bg-primary-100/15"
-      >
-        {#if guessesState.guessesList[i]?.score}
-          {#if guessesState.guessesList[i]?.correct}
-            <span class="text-secondary-900 font-bold">{guessesState.guessesList[i].score}%</span>
-          {:else}
-            <span class="text-primary-50">{guessesState.guessesList[i].score}%</span>
-          {/if}
+      <div class="grow flex items-center px-4" class:text-secondary-900={isCorrect} class:font-bold={isCorrect} class:text-primary-50={!isCorrect}>
+        {guess?.country ?? ''}
+      </div>
+      <div class="w-20 flex items-center justify-center text-center font-semibold bg-primary-100/15">
+        {#if guess?.score}
+          <span class:text-secondary-900={isCorrect} class:font-bold={isCorrect} class:text-primary-50={!isCorrect}>
+            {guess.score}%
+          </span>
         {/if}
       </div>
     </div>
