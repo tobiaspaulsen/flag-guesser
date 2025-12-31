@@ -31,7 +31,7 @@
       onclick={restartGame}
       class="bg-secondary-900 min-h-11 p-2 px-4 rounded self-start text-white font-semibold hover:scale-[1.02] active:scale-95 transition-all disabled:bg-secondary-900/30 disabled:text-secondary-100/50 disabled:cursor-not-allowed"
     >
-      Play Random Mode
+      {targetCountryState.isDailyGame ? "Play Random Mode" : "New Flag"}
     </button>
   </div>
 {/if}
