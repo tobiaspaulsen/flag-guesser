@@ -2,7 +2,7 @@
   import { untrack } from 'svelte';
   import { getImageIntersect, getImageUnion } from '$lib/getImageIntersect';
   import { Image } from 'image-js';
-  import { persistGameState, type ICountriesState, type IGuessesState, type ITargetCountryState } from '$lib/state.svelte';
+  import { persistGameState, createUserSettings, type ICountriesState, type IGuessesState, type ITargetCountryState } from '$lib/state.svelte';
   import CountrySearch from './CountrySearch.svelte';
   import AttemptList from './AttemptList.svelte';
   import FlagHeader from './FlagHeader.svelte';
@@ -12,7 +12,8 @@
 
   let gameOver: boolean = $state(false);
   let gameWon: boolean = $state(false);
-  let easyMode: boolean = $state(true);
+  
+  let userSettings = createUserSettings();
   
   let showOverlay: boolean = $state(false);
   let guessedFlagUrl: string = $state('');
@@ -105,7 +106,7 @@
 </script>
 
 <div class="flex flex-col items-center gap-5 w-full">
-  <FlagHeader {targetCountryState} bind:easyMode />
+  <FlagHeader {targetCountryState} bind:easyMode={userSettings.easyMode} />
 
   <FlagResultPanel {gameWon} {gameOver} {targetCountryState} {restartGame} />
 
@@ -115,7 +116,7 @@
     {countriesState}
     disabled={gameOver || gameWon}
     checkGuess={checkGuess}
-    easyMode={easyMode}
+    easyMode={userSettings.easyMode}
     guessesState={guessesState}
   />
 

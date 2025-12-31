@@ -12,6 +12,41 @@ export interface IGuess {
   correct: boolean;
 }
 
+export interface UserSettings {
+  easyMode: boolean;
+}
+
+const DEFAULT_SETTINGS: UserSettings = {
+  easyMode: true
+};
+
+function loadUserSettings(): UserSettings {
+  if (typeof window === 'undefined') return DEFAULT_SETTINGS;
+  const stored = localStorage.getItem('userSettings');
+  if (!stored) return DEFAULT_SETTINGS;
+  
+  try {
+    return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
+  } catch {
+    return DEFAULT_SETTINGS;
+  }
+}
+
+function saveUserSettings(settings: UserSettings): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('userSettings', JSON.stringify(settings));
+}
+
+export const createUserSettings = (): UserSettings => {
+  let settings = $state(loadUserSettings());
+
+  $effect(() => {
+    saveUserSettings(settings);
+  });
+
+  return settings;
+}
+
 export function createCountriesState(): ICountriesState {
   let countriesState: Country[] = $state([]);
   let loaded = $state(false);
