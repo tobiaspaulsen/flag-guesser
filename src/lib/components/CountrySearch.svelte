@@ -183,7 +183,7 @@
     disabled={disabled ||
       guessString.trim().length === 0 ||
       guessesState.guessedCountries.some((g) => g.name.toLowerCase() === guessString.trim().toLowerCase())}
-    class="bg-secondary-900 h-11 p-2 px-4 rounded self-start text-white font-semibold hover:scale-[1.02] active:scale-95 transition-all disabled:bg-secondary-900/30 disabled:text-secondary-100/50 disabled:cursor-not-allowed"
+    class="bg-secondary-900 h-11 p-2 px-4 rounded self-start text-primary-50 font-semibold hover:scale-[1.02] active:scale-95 transition-all disabled:bg-secondary-900/30 disabled:text-secondary-100/50 disabled:cursor-not-allowed"
     onclick={() => checkGuess(guessString)}
   >
     Guess
