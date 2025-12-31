@@ -12,6 +12,7 @@
 
   let gameOver: boolean = $state(false);
   let gameWon: boolean = $state(false);
+  let easyMode: boolean = $state(true);
   
   let showOverlay: boolean = $state(false);
   let guessedFlagUrl: string = $state('');
@@ -47,12 +48,6 @@
         gameOver = true;
         imgUrl = targetCountryState.targetFlagImgUrl;
       }
-    }
-  });
-
-  $effect(() => {
-    if (targetCountryState.targetCountry) {
-      console.log('targetCountry:', targetCountryState.targetCountry.name);
     }
   });
 
@@ -109,8 +104,8 @@
   };
 </script>
 
-<div class="flex flex-col items-center gap-5">
-  <FlagHeader {targetCountryState} />
+<div class="flex flex-col items-center gap-5 w-full">
+  <FlagHeader {targetCountryState} bind:easyMode />
 
   <FlagResultPanel {gameWon} {gameOver} {targetCountryState} {restartGame} />
 
@@ -120,7 +115,7 @@
     {countriesState}
     disabled={gameOver || gameWon}
     checkGuess={checkGuess}
-    easyMode={true}
+    easyMode={easyMode}
     guessesState={guessesState}
   />
 
