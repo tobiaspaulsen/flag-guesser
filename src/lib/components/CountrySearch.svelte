@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { asset } from '$app/paths';
   import Fuse from 'fuse.js';
   import type { ICountriesState, IGuessesState } from '$lib/state.svelte';
   import CountryListItem from './CountryListItem.svelte';
@@ -47,7 +48,7 @@
 
   const mapToFilteredCountry = (country: { name: string; countryCode: string }) => ({
     countryName: country.name,
-    countryImgSrc: `/countries/png/${country.countryCode}.png`
+    countryImgSrc: asset(`/countries/png/${country.countryCode}.png`)
   });
 
   const filterCountries = (): void => {

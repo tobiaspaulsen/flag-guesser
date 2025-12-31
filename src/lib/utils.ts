@@ -1,4 +1,5 @@
 import { Image } from "image-js";
+import { asset } from '$app/paths';
 import type { Country, IGuess, PersistedGameState } from "./state.svelte";
 import { getImageIntersect, getImageUnion } from "./getImageIntersect";
 
@@ -11,7 +12,7 @@ export type PreviousGame = {
 
 export const getPreviousGameState = async (persistedGame: PersistedGameState): Promise<PreviousGame> => {
     const guesses: IGuess[] = [];
-    const targetImage: Image = await Image.load(`/countries/png/${persistedGame.targetCountryCode}.png`);
+    const targetImage: Image = await Image.load(asset(`/countries/png/${persistedGame.targetCountryCode}.png`));
     let currentImageResult: Image | undefined = undefined;
 
     for (const guess of persistedGame.guesses) {
@@ -20,7 +21,7 @@ export const getPreviousGameState = async (persistedGame: PersistedGameState): P
             name: guess.countryName,
         };
 
-        const image = await Image.load(`/countries/png/${guess.countryCode}.png`);
+        const image = await Image.load(asset(`/countries/png/${guess.countryCode}.png`));
         const intersect = getImageIntersect(targetImage, image, 0.5);
         currentImageResult = getImageUnion(currentImageResult, intersect.Image);
 

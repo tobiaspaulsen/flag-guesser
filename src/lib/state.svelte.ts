@@ -1,4 +1,5 @@
 import { Image } from 'image-js';
+import { asset } from '$app/paths';
 
 export type Country = {
   countryCode: string;
@@ -52,7 +53,7 @@ export function createCountriesState(): ICountriesState {
   let loaded = $state(false);
 
   $effect(() => {
-    fetch('/countries/countries.json')
+    fetch(asset('/countries/countries.json'))
       .then((res) => res.json())
       .then((data) => {
         countriesState = data.map((country: { code: string; name: string }) => ({
@@ -143,7 +144,7 @@ export function createTargetCountryState(countriesState: ICountriesState): ITarg
       return targetCountry;
     },
     get targetFlagImgUrl() {
-      return targetCountry ? `/countries/png/${targetCountry.countryCode}.png` : '';
+      return targetCountry ? asset(`/countries/png/${targetCountry.countryCode}.png`) : '';
     },
     get isDailyGame() {
       return isDailyGameState;

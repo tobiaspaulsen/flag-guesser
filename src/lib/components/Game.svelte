@@ -1,5 +1,6 @@
 <script lang="ts">
   import { untrack } from 'svelte';
+  import { asset } from '$app/paths';
   import { getImageIntersect, getImageUnion } from '$lib/getImageIntersect';
   import { Image } from 'image-js';
   import { persistGameState, createUserSettings, type ICountriesState, type IGuessesState, type ITargetCountryState } from '$lib/state.svelte';
@@ -65,7 +66,7 @@
     }
 
     try {
-      guessedFlagUrl = `/countries/png/${guessedCountry.countryCode}.png`;
+      guessedFlagUrl = asset(`/countries/png/${guessedCountry.countryCode}.png`);
       showOverlay = true;
       setTimeout(() => {
         showOverlay = false;
