@@ -160,7 +160,7 @@
     />
   </div>
   {#if filteredCountries.length > 0}
-    <div class="absolute w-full top-11 rounded overflow-hidden shadow-2xl border border-t-0 border-primary-200">
+    <div class="absolute w-full top-11 rounded overflow-hidden shadow-2xl border-2 border-primary-200">
       <ul
         bind:this={listContainer}
         class="divide-y w-full divide-primary-200 m-0 max-h-[13.5rem] overflow-y-auto bg-primary-900 scrollbar-thin"
