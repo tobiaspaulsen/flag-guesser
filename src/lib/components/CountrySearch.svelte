@@ -9,7 +9,7 @@
     checkGuess,
     easyMode,
     guessesState,
-    disabled = false,
+    disabled = false
   }: {
     countriesState: ICountriesState;
     checkGuess: (guess: string) => void;
@@ -60,11 +60,18 @@
 
     if (!guessString) {
       filteredCountries = countriesState.countries
-        .filter((country) => !guessesState.guessedCountries.some(g => g.countryCode === country.countryCode))
+        .filter(
+          (country) =>
+            !guessesState.guessedCountries.some((g) => g.countryCode === country.countryCode)
+        )
         .map(mapToFilteredCountry);
     } else {
-      filteredCountries = db.search(guessString)
-        .filter(({ item: country }) => !guessesState.guessedCountries.some(g => g.countryCode === country.countryCode))
+      filteredCountries = db
+        .search(guessString)
+        .filter(
+          ({ item: country }) =>
+            !guessesState.guessedCountries.some((g) => g.countryCode === country.countryCode)
+        )
         .map(({ item: country }) => mapToFilteredCountry(country));
     }
   };
@@ -84,7 +91,11 @@
   const navigateList = (e: KeyboardEvent) => {
     if (disabled) return;
 
-    if (filteredCountries.length === 0 && !guessString && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+    if (
+      filteredCountries.length === 0 &&
+      !guessString &&
+      (e.key === 'ArrowDown' || e.key === 'ArrowUp')
+    ) {
       e.preventDefault();
       filterCountries();
       if (e.key === 'ArrowDown') {
@@ -139,52 +150,54 @@
 <svelte:window onclick={handleClickOutside} />
 
 <div class="flex gap-2 w-full justify-center items-center">
-<form
-  bind:this={formElement}
-  autocomplete="off"
-  onsubmit={handleSubmit}
-  class="w-full relative"
->
-  <div>
-    <input
-      class="w-full rounded p-2 placeholder:text-primary-100 bg-primary-900 text-primary-50 border-2 border-primary-100/70 focus:border-secondary-900/70 focus:outline-none transition-colors"
-      id="country-input"
-      type="text"
-      placeholder="Search for a country..."
-      disabled={disabled}
-      bind:this={searchInput}
-      bind:value={guessString}
-      oninput={filterCountries}
-      onfocus={filterCountries}
-      onclick={filterCountries}
-      onkeydown={navigateList}
-    />
-  </div>
-  {#if filteredCountries.length > 0}
-    <div class="absolute w-full top-11 rounded overflow-hidden shadow-2xl border-2 border-primary-200">
-      <ul
-        bind:this={listContainer}
-        class="divide-y w-full divide-primary-200 m-0 max-h-[13.5rem] overflow-y-auto bg-primary-900 scrollbar-thin"
-      >
-        {#each filteredCountries as countryObj, i}
-          <CountryListItem
-            countryName={countryObj.countryName}
-            withImage={easyMode}
-            countryImgSrc={countryObj.countryImgSrc}
-            highlighted={i === highlightIndex}
-            onclick={() => selectCountry(countryObj.countryName)}
-          />
-        {/each}
-      </ul>
+  <form bind:this={formElement} autocomplete="off" onsubmit={handleSubmit} class="w-full relative">
+    <div>
+      <input
+        class="w-full rounded p-2 placeholder:text-primary-100 bg-primary-900 text-primary-50 border-2 border-primary-100/70 focus:border-secondary-900/70 focus:outline-none transition-colors"
+        id="country-input"
+        type="text"
+        placeholder="Search for a country..."
+        {disabled}
+        bind:this={searchInput}
+        bind:value={guessString}
+        oninput={filterCountries}
+        onfocus={filterCountries}
+        onclick={filterCountries}
+        onkeydown={navigateList}
+      />
     </div>
-  {/if}
-</form>
+    {#if filteredCountries.length > 0}
+      <div
+        class="absolute w-full top-11 rounded overflow-hidden shadow-2xl border-2 border-primary-200"
+      >
+        <ul
+          bind:this={listContainer}
+          class="divide-y w-full divide-primary-200 m-0 max-h-[13.5rem] overflow-y-auto bg-primary-900 scrollbar-thin"
+        >
+          {#each filteredCountries as countryObj, i}
+            <CountryListItem
+              countryName={countryObj.countryName}
+              withImage={easyMode}
+              countryImgSrc={countryObj.countryImgSrc}
+              highlighted={i === highlightIndex}
+              onclick={() => selectCountry(countryObj.countryName)}
+            />
+          {/each}
+        </ul>
+      </div>
+    {/if}
+  </form>
   <button
     disabled={disabled ||
       guessString.trim().length === 0 ||
-      guessesState.guessedCountries.some((g) => g.name.toLowerCase() === guessString.trim().toLowerCase())}
+      guessesState.guessedCountries.some(
+        (g) => g.name.toLowerCase() === guessString.trim().toLowerCase()
+      )}
     class="bg-secondary-900 h-11 p-2 px-4 rounded self-start text-primary-50 font-semibold hover:scale-[1.02] active:scale-95 transition-all disabled:bg-secondary-900/30 disabled:text-secondary-100/50 disabled:cursor-not-allowed"
-    onclick={() => checkGuess(guessString)}
+    onclick={() => {
+      if (filteredCountries[highlightIndex])
+        selectCountry(filteredCountries[highlightIndex].countryName);
+    }}
   >
     Guess
   </button>

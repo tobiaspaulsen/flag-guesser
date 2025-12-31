@@ -3,7 +3,13 @@
   import { asset } from '$app/paths';
   import { getImageIntersect, getImageUnion } from '$lib/getImageIntersect';
   import { Image } from 'image-js';
-  import { persistGameState, createUserSettings, type ICountriesState, type IGuessesState, type ITargetCountryState } from '$lib/state.svelte';
+  import {
+    persistGameState,
+    createUserSettings,
+    type ICountriesState,
+    type IGuessesState,
+    type ITargetCountryState
+  } from '$lib/state.svelte';
   import CountrySearch from './CountrySearch.svelte';
   import AttemptList from './AttemptList.svelte';
   import FlagHeader from './FlagHeader.svelte';
@@ -13,9 +19,9 @@
 
   let gameOver: boolean = $state(false);
   let gameWon: boolean = $state(false);
-  
+
   let userSettings = createUserSettings();
-  
+
   let showOverlay: boolean = $state(false);
   let guessedFlagUrl: string = $state('');
 
@@ -23,8 +29,13 @@
     guessesState,
     countriesState,
     targetCountryState,
-    previousGameState,
-  }: { guessesState: IGuessesState; countriesState: ICountriesState; targetCountryState: ITargetCountryState; previousGameState: PreviousGame | null } = $props();
+    previousGameState
+  }: {
+    guessesState: IGuessesState;
+    countriesState: ICountriesState;
+    targetCountryState: ITargetCountryState;
+    previousGameState: PreviousGame | null;
+  } = $props();
   let guessCountryCode: string | undefined = $state();
 
   let currentResult: Image | undefined = $state();
@@ -45,7 +56,7 @@
 
       if (previousGameState.won) {
         gameWon = true;
-      } 
+      }
       if (previousGameState.guesses.length >= 5) {
         gameOver = true;
         imgUrl = targetCountryState.targetFlagImgUrl;
@@ -54,7 +65,9 @@
   });
 
   const checkGuess = async (guess: string) => {
-    if (guess.trim().toLowerCase() === targetCountryState.targetCountry?.name.trim().toLowerCase()) {
+    if (
+      guess.trim().toLowerCase() === targetCountryState.targetCountry?.name.trim().toLowerCase()
+    ) {
       gameWon = true;
     }
     let guessedCountry = countriesState.countries.find(
@@ -71,15 +84,20 @@
       setTimeout(() => {
         showOverlay = false;
       }, 800);
-      
+
       let image1: Image = await Image.load(targetCountryState.targetFlagImgUrl);
       let image2: Image = await Image.load(guessedFlagUrl);
-      
+
       let intersect = getImageIntersect(image1, image2, 0.5);
-      
+
       currentResult = getImageUnion(currentResult, intersect.Image);
 
-      guessesState.addNewGuess({ country: guessedCountry, score: intersect.percent, img: image2, correct: gameWon});
+      guessesState.addNewGuess({
+        country: guessedCountry,
+        score: intersect.percent,
+        img: image2,
+        correct: gameWon
+      });
 
       if (targetCountryState.isDailyGame) {
         persistGameState(targetCountryState, guessesState.guessesList);
@@ -93,7 +111,7 @@
       console.error('Error loading or processing images:', error);
     }
   };
-  
+
   const restartGame = () => {
     gameOver = false;
     gameWon = false;
@@ -111,14 +129,14 @@
 
   <FlagResultPanel {gameWon} {gameOver} {targetCountryState} {restartGame} />
 
-  <FlagDisplay {showOverlay} overlayFlagUrl={guessedFlagUrl} imgUrl={imgUrl} />
+  <FlagDisplay {showOverlay} overlayFlagUrl={guessedFlagUrl} {imgUrl} />
 
   <CountrySearch
     {countriesState}
     disabled={gameOver || gameWon}
-    checkGuess={checkGuess}
+    {checkGuess}
     easyMode={userSettings.easyMode}
-    guessesState={guessesState}
+    {guessesState}
   />
 
   <AttemptList {guessesState} />

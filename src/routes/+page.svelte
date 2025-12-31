@@ -1,33 +1,36 @@
 <script lang="ts">
   import Game from '$lib/components/Game.svelte';
-  import { createCountriesState, createGuessesState, createTargetCountryState, loadLatestDailyGameState } from '$lib/state.svelte';
+  import {
+    createCountriesState,
+    createGuessesState,
+    createTargetCountryState,
+    loadLatestDailyGameState
+  } from '$lib/state.svelte';
   import { getPreviousGameState, type PreviousGame } from '$lib/utils';
 
   let loadedPreviousGame: boolean = $state(false);
   let previousGameState: PreviousGame | null = $state(null);
-  
+
   let latestDailyGame = loadLatestDailyGameState();
-  
+
   $effect(() => {
-    if (latestDailyGame)
-    {
+    if (latestDailyGame) {
       const previousGamePromise = getPreviousGameState(latestDailyGame);
       previousGamePromise.then((result) => {
         previousGameState = result;
         loadedPreviousGame = true;
       });
-    }
-    else {
+    } else {
       loadedPreviousGame = true;
     }
   });
 
   const countriesState = createCountriesState();
-  
+
   let targetCountryState = $derived(
     countriesState.loaded ? createTargetCountryState(countriesState) : null
   );
-  
+
   let guessesState = createGuessesState();
 </script>
 
@@ -35,7 +38,7 @@
   <h1 class="text-3xl font-variation-settings-[150] font-medium">Flag Guesser</h1>
 </header>
 <div class="w-[min(75vw,400px)]">
-  {#if (loadedPreviousGame && countriesState.loaded && targetCountryState && guessesState)}
+  {#if loadedPreviousGame && countriesState.loaded && targetCountryState && guessesState}
     <Game {previousGameState} {guessesState} {countriesState} {targetCountryState} />
   {:else}
     <p>Loading...</p>

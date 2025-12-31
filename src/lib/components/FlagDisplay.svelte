@@ -26,11 +26,12 @@
     <div class="text-primary-100 text-center p-4"></div>
   {/if}
 </div>
+
 <style>
   .overlay-animation {
     animation: overlayFade 1s ease-in-out;
   }
-  
+
   @keyframes overlayFade {
     0% {
       opacity: 0;

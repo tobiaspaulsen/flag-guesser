@@ -27,12 +27,23 @@
           <div class="text-primary-50/30">{i + 1}</div>
         {/if}
       </div>
-      <div class="grow flex items-center px-4" class:text-secondary-900={isCorrect} class:font-bold={isCorrect} class:text-primary-50={!isCorrect}>
+      <div
+        class="grow flex items-center px-4"
+        class:text-secondary-900={isCorrect}
+        class:font-bold={isCorrect}
+        class:text-primary-50={!isCorrect}
+      >
         {guess?.country.name ?? ''}
       </div>
-      <div class="w-20 flex items-center justify-center text-center font-semibold bg-primary-100/15">
+      <div
+        class="w-20 flex items-center justify-center text-center font-semibold bg-primary-100/15"
+      >
         {#if guess?.score !== undefined}
-          <span class:text-secondary-900={isCorrect} class:font-bold={isCorrect} class:text-primary-50={!isCorrect}>
+          <span
+            class:text-secondary-900={isCorrect}
+            class:font-bold={isCorrect}
+            class:text-primary-50={!isCorrect}
+          >
             {guess.score}%
           </span>
         {/if}
