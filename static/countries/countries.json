@@ -192,10 +192,6 @@
     "name": "Botswana"
   },
   {
-    "code": "bv",
-    "name": "Bouvet Island"
-  },
-  {
     "capital": "Bras\u00edlia",
     "code": "br",
     "continent": "South America",
@@ -276,10 +272,6 @@
     "name": "Central African Republic"
   },
   {
-    "code": "cefta",
-    "name": "Central European Free Trade Agreement"
-  },
-  {
     "capital": "N'Djamena",
     "code": "td",
     "continent": "Africa",
@@ -302,10 +294,6 @@
     "code": "cx",
     "continent": "Asia",
     "name": "Christmas Island"
-  },
-  {
-    "code": "cp",
-    "name": "Clipperton Island"
   },
   {
     "capital": "West Island",
@@ -466,10 +454,6 @@
     "name": "Ethiopia"
   },
   {
-    "code": "eu",
-    "name": "Europe"
-  },
-  {
     "capital": "Stanley",
     "code": "fk",
     "continent": "South America",
@@ -628,10 +612,6 @@
     "code": "ht",
     "continent": "North America",
     "name": "Haiti"
-  },
-  {
-    "code": "hm",
-    "name": "Heard Island and McDonald Islands"
   },
   {
     "capital": "Vatican City",
@@ -896,12 +876,6 @@
     "name": "Mauritius"
   },
   {
-    "capital": "Mamoudzou",
-    "code": "yt",
-    "continent": "Africa",
-    "name": "Mayotte"
-  },
-  {
     "capital": "Mexico City",
     "code": "mx",
     "continent": "North America",
@@ -1056,10 +1030,6 @@
     "code": "om",
     "continent": "Asia",
     "name": "Oman"
-  },
-  {
-    "code": "pc",
-    "name": "Pacific Community"
   },
   {
     "capital": "Islamabad",
@@ -1494,24 +1464,10 @@
     "name": "United Kingdom"
   },
   {
-    "code": "un",
-    "name": "United Nations"
-  },
-  {
-    "capital": "Washington, D.C.",
-    "code": "um",
-    "continent": "North America",
-    "name": "United States Minor Outlying Islands"
-  },
-  {
     "capital": "Washington, D.C.",
     "code": "us",
     "continent": "North America",
     "name": "United States of America"
-  },
-  {
-    "code": "xx",
-    "name": "Unknown"
   },
   {
     "capital": "Montevideo",
@@ -1560,12 +1516,6 @@
     "code": "gb-wls",
     "continent": "Europe",
     "name": "Wales"
-  },
-  {
-    "capital": "Mata-Utu",
-    "code": "wf",
-    "continent": "Oceania",
-    "name": "Wallis and Futuna"
   },
   {
     "capital": "Laayoune",
