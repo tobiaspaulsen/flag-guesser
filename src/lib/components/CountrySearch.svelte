@@ -20,13 +20,24 @@
 
   let guessString: string = $state('');
 
+  const normalizeString = (str: string): string => {
+    return str
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+
   const db = $derived(
     new Fuse(countriesState.countries, {
       shouldSort: true,
       threshold: 0.2,
       distance: 100,
       minMatchCharLength: 1,
-      keys: ['name']
+      keys: ['name'],
+      getFn: (obj, path) => {
+        const value = Fuse.config.getFn(obj, path) as string;
+        return normalizeString(value);
+      }
     })
   );
 
@@ -66,8 +77,9 @@
         )
         .map(mapToFilteredCountry);
     } else {
+      const normalizedGuess = normalizeString(guessString);
       filteredCountries = db
-        .search(guessString)
+        .search(normalizedGuess)
         .filter(
           ({ item: country }) =>
             !guessesState.guessedCountries.some((g) => g.countryCode === country.countryCode)

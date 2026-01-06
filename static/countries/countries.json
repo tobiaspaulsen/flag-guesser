@@ -48,10 +48,6 @@
     "name": "Anguilla"
   },
   {
-    "code": "aq",
-    "name": "Antarctica"
-  },
-  {
     "capital": "St. John's",
     "code": "ag",
     "continent": "North America",
@@ -80,10 +76,6 @@
     "code": "sh-ac",
     "continent": "Africa",
     "name": "Ascension Island"
-  },
-  {
-    "code": "asean",
-    "name": "Association of Southeast Asian Nations"
   },
   {
     "capital": "Canberra",
@@ -762,10 +754,6 @@
     "code": "lv",
     "continent": "Europe",
     "name": "Latvia"
-  },
-  {
-    "code": "arab",
-    "name": "League of Arab States"
   },
   {
     "capital": "Beirut",
