@@ -1,5 +1,14 @@
 import { Image } from 'image-js';
 import { asset } from '$app/paths';
+import { getDateString } from './utils';
+
+const STORAGE_KEYS = {
+  USER_SETTINGS: 'userSettings',
+  GAME_STATS: 'gameStats',
+  DAILY_GAME_STATE: 'dailyGameState'
+} as const;
+
+export const MAX_GUESSES = 5;
 
 export type Country = {
   countryCode: string;
@@ -18,13 +27,31 @@ export interface UserSettings {
   easyMode: boolean;
 }
 
+export interface GameStats {
+  played: number;
+  won: number;
+  currentStreak: number;
+  maxStreak: number;
+  lastPlayedDate: string;
+  guessDistribution: { [key: number]: number }; // key: number of guesses, value: count
+}
+
+const DEFAULT_STATS: GameStats = {
+  played: 0,
+  won: 0,
+  currentStreak: 0,
+  maxStreak: 0,
+  lastPlayedDate: '',
+  guessDistribution: {}
+};
+
 const DEFAULT_SETTINGS: UserSettings = {
   easyMode: true
 };
 
 function loadUserSettings(): UserSettings {
   if (typeof window === 'undefined') return DEFAULT_SETTINGS;
-  const stored = localStorage.getItem('userSettings');
+  const stored = localStorage.getItem(STORAGE_KEYS.USER_SETTINGS);
   if (!stored) return DEFAULT_SETTINGS;
 
   try {
@@ -36,7 +63,7 @@ function loadUserSettings(): UserSettings {
 
 function saveUserSettings(settings: UserSettings): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem('userSettings', JSON.stringify(settings));
+  localStorage.setItem(STORAGE_KEYS.USER_SETTINGS, JSON.stringify(settings));
 }
 
 export const createUserSettings = (): UserSettings => {
@@ -48,6 +75,60 @@ export const createUserSettings = (): UserSettings => {
 
   return settings;
 };
+
+export function getGameStats(): GameStats {
+  if (typeof window === 'undefined') return DEFAULT_STATS;
+  const stored = localStorage.getItem(STORAGE_KEYS.GAME_STATS);
+  if (!stored) return DEFAULT_STATS;
+
+
+  try {
+    return { ...DEFAULT_STATS, ...JSON.parse(stored) };
+  } catch {
+    return DEFAULT_STATS;
+  }
+}
+
+function saveGameStats(stats: GameStats): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(STORAGE_KEYS.GAME_STATS, JSON.stringify(stats));
+}
+
+function getYesterdayString(): string {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return getDateString(yesterday);
+}
+
+function updateGameStats(won: boolean, guessCount: number): void {
+  const stats = getGameStats();
+  const today = getTodayString();
+  const yesterday = getYesterdayString();
+
+  // Only update if not already played today
+  if (stats.lastPlayedDate === today) {
+    return;
+  }
+
+  stats.played++;
+  stats.lastPlayedDate = today;
+
+  if (won) {
+    stats.won++;
+    stats.guessDistribution[guessCount] = (stats.guessDistribution[guessCount] || 0) + 1;
+    
+    if (stats.lastPlayedDate === yesterday || stats.currentStreak === 0) {
+      stats.currentStreak++;
+    } else {
+      stats.currentStreak = 1;
+    }
+    stats.maxStreak = Math.max(stats.maxStreak, stats.currentStreak);
+  } else {
+    stats.currentStreak = 0;
+  }
+
+  saveGameStats(stats);
+}
 
 export function createCountriesState(): ICountriesState {
   let countriesState: Country[] = $state([]);
@@ -118,13 +199,13 @@ function getTodaysFlagIndex(totalCountries: number): number {
 }
 
 function getTodayString(): string {
-  return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  return getDateString(new Date());
 }
 
 export function loadLatestDailyGameState(): PersistedGameState | null {
   if (typeof window === 'undefined') return null;
   const today = getTodayString();
-  const stored = localStorage.getItem('dailyGameState');
+  const stored = localStorage.getItem(STORAGE_KEYS.DAILY_GAME_STATE);
   if (!stored) return null;
 
   try {
@@ -137,7 +218,7 @@ export function loadLatestDailyGameState(): PersistedGameState | null {
 
 function saveGameState(state: PersistedGameState): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem('dailyGameState', JSON.stringify(state));
+  localStorage.setItem(STORAGE_KEYS.DAILY_GAME_STATE, JSON.stringify(state));
 }
 
 export function createTargetCountryState(countriesState: ICountriesState): ITargetCountryState {
@@ -170,16 +251,21 @@ export const persistGameState = (
   targetCountryState: ITargetCountryState,
   guesses: IGuess[]
 ): void => {
+  const won = guesses.some((g) => g.correct);
   const gameState: PersistedGameState = {
     date: getTodayString(),
     targetCountryCode: targetCountryState.targetCountry.countryCode,
-    won: guesses.some((g) => g.correct),
+    won,
     guesses: guesses.map((g) => ({
       countryCode: g.country.countryCode,
       countryName: g.country.name
     }))
   };
   saveGameState(gameState);
+
+  if (won || guesses.length >= MAX_GUESSES) {
+    updateGameStats(won, guesses.length);
+  }
 };
 
 export function createGuessesState(): IGuessesState {

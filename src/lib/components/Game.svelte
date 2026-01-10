@@ -6,6 +6,8 @@
   import {
     persistGameState,
     createUserSettings,
+    getGameStats,
+    MAX_GUESSES,
     type ICountriesState,
     type IGuessesState,
     type ITargetCountryState
@@ -15,12 +17,14 @@
   import FlagHeader from './FlagHeader.svelte';
   import FlagResultPanel from './FlagResultPanel.svelte';
   import FlagDisplay from './FlagDisplay.svelte';
+  import StatsPanel from './StatsPanel.svelte';
   import type { PreviousGame } from '$lib/utils';
 
   let gameOver: boolean = $state(false);
   let gameWon: boolean = $state(false);
 
   let userSettings = createUserSettings();
+  let stats = $state(getGameStats());
 
   let showOverlay: boolean = $state(false);
   let guessedFlagUrl: string = $state('');
@@ -63,7 +67,7 @@
       if (previousGameState.won) {
         gameWon = true;
       }
-      if (previousGameState.guesses.length >= 5) {
+      if (previousGameState.guesses.length >= MAX_GUESSES) {
         gameOver = true;
         imgUrl = targetCountryState.targetFlagImgUrl;
       }
@@ -71,11 +75,6 @@
   });
 
   const checkGuess = async (guess: string) => {
-    if (
-      guess.trim().toLowerCase() === targetCountryState.targetCountry?.name.trim().toLowerCase()
-    ) {
-      gameWon = true;
-    }
     let guessedCountry = countriesState.countries.find(
       (country) => country.name.toLowerCase() === guess.trim().toLowerCase()
     );
@@ -98,6 +97,10 @@
 
       currentResult = getImageUnion(currentResult, intersect.Image);
 
+      if (guessedCountry.name === targetCountryState.targetCountry?.name) {
+        gameWon = true;
+      }
+
       guessesState.addNewGuess({
         country: guessedCountry,
         score: intersect.percent,
@@ -108,9 +111,10 @@
 
       if (targetCountryState.isDailyGame) {
         persistGameState(targetCountryState, guessesState.guessesList);
+        stats = getGameStats();
       }
 
-      if (guessesState.guessesList.length >= 5) {
+      if (guessesState.guessesList.length >= MAX_GUESSES) {
         gameOver = true;
         imgUrl = targetCountryState.targetFlagImgUrl;
       }
@@ -134,17 +138,22 @@
 <div class="flex flex-col items-center gap-5 w-full">
   <FlagHeader {targetCountryState} bind:easyMode={userSettings.easyMode} />
 
+  <FlagDisplay {showOverlay} overlayFlagUrl={guessedFlagUrl} {imgUrl} />
+  
   <FlagResultPanel {gameWon} {gameOver} {targetCountryState} {restartGame} />
 
-  <FlagDisplay {showOverlay} overlayFlagUrl={guessedFlagUrl} {imgUrl} />
+  {#if (gameOver || gameWon) && targetCountryState.isDailyGame}
+    <StatsPanel gameStats={stats} />
+  {/if}
 
-  <CountrySearch
-    {countriesState}
-    disabled={gameOver || gameWon}
-    {checkGuess}
-    easyMode={userSettings.easyMode}
-    {guessesState}
-  />
+  {#if !(gameOver || gameWon)}
+    <CountrySearch
+      {countriesState}
+      {checkGuess}
+      easyMode={userSettings.easyMode}
+      {guessesState}
+    />
+  {/if}
 
   <AttemptList {guessesState} bind:hoveredGuessIndex />
 </div>

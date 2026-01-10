@@ -10,7 +10,7 @@
   } = $props();
 </script>
 
-<div class="flex flex-col items-center gap-3">
+<div class="flex flex-col items-center gap-5">
   <div class="flex items-center gap-2">
     <div class="flex items-center gap-2 text-primary-50">
       <span class="text-sm font-medium">Easy</span>
@@ -48,7 +48,7 @@
     </div>
   </div>
 
-  <div class="text-xl text-secondary-600 font-medium">
+  <div class="text-2xl text-secondary-600 font-medium">
     {targetCountryState.isDailyGame ? "Today's Flag" : 'Random Mode'}
   </div>
 </div>
