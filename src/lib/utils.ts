@@ -33,6 +33,7 @@ export const getPreviousGameState = async (
       country,
       score: intersect.percent,
       img: image,
+      intersectionImg: intersect.Image,
       correct: guess.countryCode === persistedGame.targetCountryCode
     });
   }

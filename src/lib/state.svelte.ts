@@ -10,6 +10,7 @@ export interface IGuess {
   country: Country;
   score: number;
   img: Image;
+  intersectionImg: Image;
   correct: boolean;
 }
 

@@ -24,6 +24,7 @@
 
   let showOverlay: boolean = $state(false);
   let guessedFlagUrl: string = $state('');
+  let hoveredGuessIndex: number | null = $state(null);
 
   let {
     guessesState,
@@ -39,7 +40,11 @@
   let guessCountryCode: string | undefined = $state();
 
   let currentResult: Image | undefined = $state();
-  let imgUrl: string | undefined = $derived(currentResult?.toDataURL());
+  let imgUrl: string | undefined = $derived(
+    hoveredGuessIndex !== null && guessesState.guessesList[hoveredGuessIndex]
+      ? guessesState.guessesList[hoveredGuessIndex].intersectionImg.toDataURL()
+      : currentResult?.toDataURL()
+  );
 
   untrack(() => {
     if (previousGameState) {
@@ -48,6 +53,7 @@
           country: pastGuess.country,
           score: pastGuess.score,
           img: pastGuess.img,
+          intersectionImg: pastGuess.intersectionImg,
           correct: pastGuess.correct
         });
       }
@@ -96,6 +102,7 @@
         country: guessedCountry,
         score: intersect.percent,
         img: image2,
+        intersectionImg: intersect.Image,
         correct: gameWon
       });
 
@@ -139,5 +146,5 @@
     {guessesState}
   />
 
-  <AttemptList {guessesState} />
+  <AttemptList {guessesState} bind:hoveredGuessIndex />
 </div>

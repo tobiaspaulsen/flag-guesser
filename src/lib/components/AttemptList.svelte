@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { IGuessesState } from '$lib/state.svelte';
 
-  let { guessesState }: { guessesState: IGuessesState } = $props();
+  let { guessesState, hoveredGuessIndex = $bindable() }: { guessesState: IGuessesState; hoveredGuessIndex?: number | null } = $props();
 </script>
 
 <div class="flex flex-col gap-3 w-full mt-4 text-l">
@@ -11,10 +11,14 @@
     {@const guess = guessesState.guessesList[i]}
     {@const isCorrect = guess?.correct}
     <div
+      role="button"
+      tabindex={guess ? 0 : -1}
       class="flex h-14 rounded-lg overflow-hidden border border-primary-200 transition-all"
       class:bg-primary-900={guess}
       class:bg-transparent={!guess}
       class:border-dashed={!guess}
+      onmouseenter={() => guess && (hoveredGuessIndex = i)}
+      onmouseleave={() => (hoveredGuessIndex = null)}
     >
       <div class="w-20 flex items-center justify-center bg-primary-100/15 p-2">
         {#if guess?.img}
