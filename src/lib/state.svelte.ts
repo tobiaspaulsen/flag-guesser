@@ -108,7 +108,13 @@ function getTodaysFlagIndex(totalCountries: number): number {
   const today = new Date();
   const diffTime = today.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays % totalCountries;
+  
+
+  let seed = diffDays;
+  seed = (seed * 9301 + 49297) % 233280;
+  const random = seed / 233280;
+  
+  return Math.floor(random * totalCountries);
 }
 
 function getTodayString(): string {
