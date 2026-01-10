@@ -2,7 +2,7 @@
   let {
     showOverlay,
     overlayFlagUrl,
-    imgUrl
+    imgUrl,
   }: {
     showOverlay: boolean;
     overlayFlagUrl: string;

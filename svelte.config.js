@@ -1,11 +1,10 @@
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   compilerOptions: {
-    runes: true
+    runes: true,
   },
   kit: {
     adapter: adapter({
@@ -13,13 +12,13 @@ const config = {
       assets: 'build',
       fallback: undefined,
       precompress: false,
-      strict: true
+      strict: true,
     }),
     paths: {
-      base: process.env.NODE_ENV === 'production' ? process.env.BASE_PATH : ''
-    }
+      base: process.env.NODE_ENV === 'production' ? process.env.BASE_PATH : '',
+    },
   },
-  preprocess: vitePreprocess()
+  preprocess: vitePreprocess(),
 };
 
 export default config;

@@ -10,7 +10,7 @@
     MAX_GUESSES,
     type ICountriesState,
     type IGuessesState,
-    type ITargetCountryState
+    type ITargetCountryState,
   } from '$lib/state.svelte';
   import CountrySearch from './CountrySearch.svelte';
   import AttemptList from './AttemptList.svelte';
@@ -34,7 +34,7 @@
     guessesState,
     countriesState,
     targetCountryState,
-    previousGameState
+    previousGameState,
   }: {
     guessesState: IGuessesState;
     countriesState: ICountriesState;
@@ -47,7 +47,7 @@
   let imgUrl: string | undefined = $derived(
     hoveredGuessIndex !== null && guessesState.guessesList[hoveredGuessIndex]
       ? guessesState.guessesList[hoveredGuessIndex].intersectionImg.toDataURL()
-      : currentResult?.toDataURL()
+      : currentResult?.toDataURL(),
   );
 
   untrack(() => {
@@ -58,7 +58,7 @@
           score: pastGuess.score,
           img: pastGuess.img,
           intersectionImg: pastGuess.intersectionImg,
-          correct: pastGuess.correct
+          correct: pastGuess.correct,
         });
       }
 
@@ -76,7 +76,7 @@
 
   const checkGuess = async (guess: string) => {
     let guessedCountry = countriesState.countries.find(
-      (country) => country.name.toLowerCase() === guess.trim().toLowerCase()
+      (country) => country.name.toLowerCase() === guess.trim().toLowerCase(),
     );
 
     if (!guessedCountry) {
@@ -84,7 +84,9 @@
     }
 
     try {
-      guessedFlagUrl = asset(`/countries/png/${guessedCountry.countryCode}.png`);
+      guessedFlagUrl = asset(
+        `/countries/png/${guessedCountry.countryCode}.png`,
+      );
       showOverlay = true;
       setTimeout(() => {
         showOverlay = false;
@@ -106,7 +108,7 @@
         score: intersect.percent,
         img: image2,
         intersectionImg: intersect.Image,
-        correct: gameWon
+        correct: gameWon,
       });
 
       if (targetCountryState.isDailyGame) {
@@ -139,7 +141,7 @@
   <FlagHeader {targetCountryState} bind:easyMode={userSettings.easyMode} />
 
   <FlagDisplay {showOverlay} overlayFlagUrl={guessedFlagUrl} {imgUrl} />
-  
+
   <FlagResultPanel {gameWon} {gameOver} {targetCountryState} {restartGame} />
 
   {#if (gameOver || gameWon) && targetCountryState.isDailyGame}

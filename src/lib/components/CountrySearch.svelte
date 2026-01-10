@@ -9,7 +9,7 @@
     checkGuess,
     easyMode,
     guessesState,
-    disabled = false
+    disabled = false,
   }: {
     countriesState: ICountriesState;
     checkGuess: (guess: string) => void;
@@ -37,8 +37,8 @@
       getFn: (obj, path) => {
         const value = Fuse.config.getFn(obj, path) as string;
         return normalizeString(value);
-      }
-    })
+      },
+    }),
   );
 
   let filteredCountries: {
@@ -52,14 +52,22 @@
 
   $effect(() => {
     if (listContainer) {
-      const highlightedElement = listContainer.children[highlightIndex] as HTMLElement;
-      highlightedElement?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      const highlightedElement = listContainer.children[
+        highlightIndex
+      ] as HTMLElement;
+      highlightedElement?.scrollIntoView({
+        block: 'nearest',
+        behavior: 'smooth',
+      });
     }
   });
 
-  const mapToFilteredCountry = (country: { name: string; countryCode: string }) => ({
+  const mapToFilteredCountry = (country: {
+    name: string;
+    countryCode: string;
+  }) => ({
     countryName: country.name,
-    countryImgSrc: asset(`/countries/png/${country.countryCode}.png`)
+    countryImgSrc: asset(`/countries/png/${country.countryCode}.png`),
   });
 
   const filterCountries = (): void => {
@@ -73,7 +81,9 @@
       filteredCountries = countriesState.countries
         .filter(
           (country) =>
-            !guessesState.guessedCountries.some((g) => g.countryCode === country.countryCode)
+            !guessesState.guessedCountries.some(
+              (g) => g.countryCode === country.countryCode,
+            ),
         )
         .map(mapToFilteredCountry);
     } else {
@@ -82,7 +92,9 @@
         .search(normalizedGuess)
         .filter(
           ({ item: country }) =>
-            !guessesState.guessedCountries.some((g) => g.countryCode === country.countryCode)
+            !guessesState.guessedCountries.some(
+              (g) => g.countryCode === country.countryCode,
+            ),
         )
         .map(({ item: country }) => mapToFilteredCountry(country));
     }
@@ -146,9 +158,15 @@
   const handleSubmit = (e: Event) => {
     e.preventDefault();
     const isDuplicate = guessesState.guessedCountries.some(
-      (g) => g.name.toLowerCase() === guessString.trim().toLowerCase()
+      (g) => g.name.toLowerCase() === guessString.trim().toLowerCase(),
     );
-    if (disabled || !guessString.trim() || filteredCountries.length > 0 || isDuplicate) return;
+    if (
+      disabled ||
+      !guessString.trim() ||
+      filteredCountries.length > 0 ||
+      isDuplicate
+    )
+      return;
     checkGuess(guessString);
   };
 
@@ -162,7 +180,12 @@
 <svelte:window onclick={handleClickOutside} />
 
 <div class="flex gap-2 w-full justify-center items-center">
-  <form bind:this={formElement} autocomplete="off" onsubmit={handleSubmit} class="w-full relative">
+  <form
+    bind:this={formElement}
+    autocomplete="off"
+    onsubmit={handleSubmit}
+    class="w-full relative"
+  >
     <div>
       <input
         class="w-full rounded p-2 placeholder:text-primary-100 bg-primary-900 text-primary-50 border-2 border-primary-100/70 focus:border-secondary-900/70 focus:outline-none transition-colors"
@@ -203,7 +226,7 @@
     disabled={disabled ||
       guessString.trim().length === 0 ||
       guessesState.guessedCountries.some(
-        (g) => g.name.toLowerCase() === guessString.trim().toLowerCase()
+        (g) => g.name.toLowerCase() === guessString.trim().toLowerCase(),
       )}
     class="bg-secondary-900 h-11 p-2 px-4 rounded self-start text-primary-50 font-semibold hover:scale-[1.02] active:scale-95 transition-all disabled:bg-secondary-900/30 disabled:text-secondary-100/50 disabled:cursor-not-allowed"
     onclick={() => {

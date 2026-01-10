@@ -4,7 +4,7 @@
     withImage,
     countryImgSrc,
     highlighted,
-    onclick
+    onclick,
   }: {
     countryName: string;
     withImage: boolean;
@@ -32,7 +32,11 @@
   onkeydown={handleKeydown}
 >
   {#if withImage}
-    <img class="h-8 w-auto rounded-sm" src={countryImgSrc} alt="Flag of {countryName}" />
+    <img
+      class="h-8 w-auto rounded-sm"
+      src={countryImgSrc}
+      alt="Flag of {countryName}"
+    />
   {/if}
 
   {countryName}

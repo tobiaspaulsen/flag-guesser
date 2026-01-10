@@ -11,21 +11,23 @@ export type PreviousGame = {
 };
 
 export const getPreviousGameState = async (
-  persistedGame: PersistedGameState
+  persistedGame: PersistedGameState,
 ): Promise<PreviousGame> => {
   const guesses: IGuess[] = [];
   const targetImage: Image = await Image.load(
-    asset(`/countries/png/${persistedGame.targetCountryCode}.png`)
+    asset(`/countries/png/${persistedGame.targetCountryCode}.png`),
   );
   let currentImageResult: Image | undefined = undefined;
 
   for (const guess of persistedGame.guesses) {
     const country: Country = {
       countryCode: guess.countryCode,
-      name: guess.countryName
+      name: guess.countryName,
     };
 
-    const image = await Image.load(asset(`/countries/png/${guess.countryCode}.png`));
+    const image = await Image.load(
+      asset(`/countries/png/${guess.countryCode}.png`),
+    );
     const intersect = getImageIntersect(targetImage, image, 0.5);
     currentImageResult = getImageUnion(currentImageResult, intersect.Image);
 
@@ -34,7 +36,7 @@ export const getPreviousGameState = async (
       score: intersect.percent,
       img: image,
       intersectionImg: intersect.Image,
-      correct: guess.countryCode === persistedGame.targetCountryCode
+      correct: guess.countryCode === persistedGame.targetCountryCode,
     });
   }
 
@@ -42,10 +44,10 @@ export const getPreviousGameState = async (
     won: persistedGame.won,
     targetCountryCode: persistedGame.targetCountryCode,
     guesses: guesses,
-    resultImage: currentImageResult
+    resultImage: currentImageResult,
   };
 };
 
 export const getDateString = (date: Date): string => {
   return date.toISOString().split('T')[0]; // YYYY-MM-DD
-}
+};

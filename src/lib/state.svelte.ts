@@ -5,7 +5,7 @@ import { getDateString } from './utils';
 const STORAGE_KEYS = {
   USER_SETTINGS: 'userSettings',
   GAME_STATS: 'gameStats',
-  DAILY_GAME_STATE: 'dailyGameState'
+  DAILY_GAME_STATE: 'dailyGameState',
 } as const;
 
 export const MAX_GUESSES = 5;
@@ -42,11 +42,11 @@ const DEFAULT_STATS: GameStats = {
   currentStreak: 0,
   maxStreak: 0,
   lastPlayedDate: '',
-  guessDistribution: {}
+  guessDistribution: {},
 };
 
 const DEFAULT_SETTINGS: UserSettings = {
-  easyMode: true
+  easyMode: true,
 };
 
 function loadUserSettings(): UserSettings {
@@ -81,7 +81,6 @@ export function getGameStats(): GameStats {
   const stored = localStorage.getItem(STORAGE_KEYS.GAME_STATS);
   if (!stored) return DEFAULT_STATS;
 
-
   try {
     return { ...DEFAULT_STATS, ...JSON.parse(stored) };
   } catch {
@@ -115,8 +114,9 @@ function updateGameStats(won: boolean, guessCount: number): void {
 
   if (won) {
     stats.won++;
-    stats.guessDistribution[guessCount] = (stats.guessDistribution[guessCount] || 0) + 1;
-    
+    stats.guessDistribution[guessCount] =
+      (stats.guessDistribution[guessCount] || 0) + 1;
+
     if (stats.lastPlayedDate === yesterday || stats.currentStreak === 0) {
       stats.currentStreak++;
     } else {
@@ -138,10 +138,12 @@ export function createCountriesState(): ICountriesState {
     fetch(asset('/countries/countries.json'))
       .then((res) => res.json())
       .then((data) => {
-        countriesState = data.map((country: { code: string; name: string }) => ({
-          countryCode: country.code.toLowerCase(),
-          name: country.name
-        }));
+        countriesState = data.map(
+          (country: { code: string; name: string }) => ({
+            countryCode: country.code.toLowerCase(),
+            name: country.name,
+          }),
+        );
         loaded = true;
       });
   });
@@ -152,7 +154,7 @@ export function createCountriesState(): ICountriesState {
     },
     get loaded() {
       return loaded;
-    }
+    },
   };
 }
 
@@ -189,12 +191,11 @@ function getTodaysFlagIndex(totalCountries: number): number {
   const today = new Date();
   const diffTime = today.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  
 
   let seed = diffDays;
   seed = (seed * 9301 + 49297) % 233280;
   const random = seed / 233280;
-  
+
   return Math.floor(random * totalCountries);
 }
 
@@ -221,7 +222,9 @@ function saveGameState(state: PersistedGameState): void {
   localStorage.setItem(STORAGE_KEYS.DAILY_GAME_STATE, JSON.stringify(state));
 }
 
-export function createTargetCountryState(countriesState: ICountriesState): ITargetCountryState {
+export function createTargetCountryState(
+  countriesState: ICountriesState,
+): ITargetCountryState {
   const targetIndex = getTodaysFlagIndex(countriesState.countries.length);
 
   let targetCountry = $state(countriesState.countries[targetIndex]);
@@ -232,7 +235,9 @@ export function createTargetCountryState(countriesState: ICountriesState): ITarg
       return targetCountry;
     },
     get targetFlagImgUrl() {
-      return targetCountry ? asset(`/countries/png/${targetCountry.countryCode}.png`) : '';
+      return targetCountry
+        ? asset(`/countries/png/${targetCountry.countryCode}.png`)
+        : '';
     },
     get isDailyGame() {
       return isDailyGameState;
@@ -241,15 +246,17 @@ export function createTargetCountryState(countriesState: ICountriesState): ITarg
       isDailyGameState = false;
       if (countriesState.countries.length > 0) {
         targetCountry =
-          countriesState.countries[Math.floor(Math.random() * countriesState.countries.length)];
+          countriesState.countries[
+            Math.floor(Math.random() * countriesState.countries.length)
+          ];
       }
-    }
+    },
   };
 }
 
 export const persistGameState = (
   targetCountryState: ITargetCountryState,
-  guesses: IGuess[]
+  guesses: IGuess[],
 ): void => {
   const won = guesses.some((g) => g.correct);
   const gameState: PersistedGameState = {
@@ -258,8 +265,8 @@ export const persistGameState = (
     won,
     guesses: guesses.map((g) => ({
       countryCode: g.country.countryCode,
-      countryName: g.country.name
-    }))
+      countryName: g.country.name,
+    })),
   };
   saveGameState(gameState);
 
@@ -283,6 +290,6 @@ export function createGuessesState(): IGuessesState {
     },
     get guessedCountries() {
       return guesses.map((guess) => guess.country);
-    }
+    },
   };
 }

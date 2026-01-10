@@ -3,7 +3,7 @@
 
   let {
     targetCountryState,
-    easyMode = $bindable()
+    easyMode = $bindable(),
   }: {
     targetCountryState: ITargetCountryState;
     easyMode: boolean;
@@ -43,7 +43,8 @@
       <div
         class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 p-2 bg-primary-900 text-primary-50 text-xs rounded shadow-lg border-2 border-primary-300 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10"
       >
-        Easy mode shows the flags in addition to the country names in the dropdown.
+        Easy mode shows the flags in addition to the country names in the
+        dropdown.
       </div>
     </div>
   </div>

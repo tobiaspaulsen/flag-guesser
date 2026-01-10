@@ -4,7 +4,11 @@ const HUE_THRESHOLD = 30; // Maximum hue difference in degrees (0-360)
 const SATURATION_THRESHOLD = 0.5; // Maximum saturation difference (0-1)
 const LIGHTNESS_THRESHOLD = 0.5; // Maximum lightness difference (0-1)
 
-const rgb_to_hsl = (r: number, g: number, b: number): [number, number, number] => {
+const rgb_to_hsl = (
+  r: number,
+  g: number,
+  b: number,
+): [number, number, number] => {
   r /= 255;
   g /= 255;
   b /= 255;
@@ -39,9 +43,10 @@ const colors_match = (rgb1: number[], rgb2: number[]): boolean => {
   // Don't match if one color is very dark/light and the other isn't
   const very_dark_threshold = 0.15;
   const very_light_threshold = 0.85;
-  const one_very_dark = (l1 < very_dark_threshold) !== (l2 < very_dark_threshold);
-  const one_very_light = (l1 > very_light_threshold) !== (l2 > very_light_threshold);
-  
+  const one_very_dark = l1 < very_dark_threshold !== l2 < very_dark_threshold;
+  const one_very_light =
+    l1 > very_light_threshold !== l2 > very_light_threshold;
+
   if (one_very_dark || one_very_light) {
     return false;
   }
@@ -65,9 +70,12 @@ const colors_match = (rgb1: number[], rgb2: number[]): boolean => {
 export const getImageIntersect = (
   image1: Image,
   image2: Image,
-  imageScaleRatio: number
+  imageScaleRatio: number,
 ): { Image: Image; percent: number } => {
-  image2.resize({ width: image1.width * imageScaleRatio, height: image1.height * imageScaleRatio });
+  image2.resize({
+    width: image1.width * imageScaleRatio,
+    height: image1.height * imageScaleRatio,
+  });
   const result = new Image({ width: image1.width, height: image1.height });
   let counter = 0;
   let actualMax = 0;
@@ -88,7 +96,10 @@ export const getImageIntersect = (
   return { Image: result, percent: percentage };
 };
 
-export const getImageUnion = (image1: Image | undefined, image2: Image): Image => {
+export const getImageUnion = (
+  image1: Image | undefined,
+  image2: Image,
+): Image => {
   if (!image1) {
     return image2;
   }

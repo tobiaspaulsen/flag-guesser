@@ -1,11 +1,17 @@
 <script lang="ts">
   import type { IGuessesState } from '$lib/state.svelte';
 
-  let { guessesState, hoveredGuessIndex = $bindable() }: { guessesState: IGuessesState; hoveredGuessIndex?: number | null } = $props();
+  let {
+    guessesState,
+    hoveredGuessIndex = $bindable(),
+  }: { guessesState: IGuessesState; hoveredGuessIndex?: number | null } =
+    $props();
 </script>
 
 <div class="flex flex-col gap-3 w-full mt-4 text-l">
-  <div class="text-primary-100 text-sm font-semibold uppercase tracking-wide">Your guesses</div>
+  <div class="text-primary-100 text-sm font-semibold uppercase tracking-wide">
+    Your guesses
+  </div>
 
   {#each Array(5) as _, i}
     {@const guess = guessesState.guessesList[i]}
