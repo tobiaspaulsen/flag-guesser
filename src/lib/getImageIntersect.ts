@@ -1,12 +1,65 @@
 import { Image } from 'image-js';
 
-const THRESHOLD = 80;
+const HUE_THRESHOLD = 30; // Maximum hue difference in degrees (0-360)
+const SATURATION_THRESHOLD = 0.5; // Maximum saturation difference (0-1)
+const LIGHTNESS_THRESHOLD = 0.5; // Maximum lightness difference (0-1)
 
-const rgb_difference = (rgb1: number[], rgb2: number[]): number => {
-  const [r1, g1, b1] = rgb1;
-  const [r2, g2, b2] = rgb2;
+const rgb_to_hsl = (r: number, g: number, b: number): [number, number, number] => {
+  r /= 255;
+  g /= 255;
+  b /= 255;
 
-  return Math.sqrt((r2 - r1) ** 2 + (g2 - g1) ** 2 + (b2 - b1) ** 2);
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const delta = max - min;
+
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+
+  if (delta !== 0) {
+    s = l > 0.5 ? delta / (2 - max - min) : delta / (max + min);
+
+    if (max === r) {
+      h = ((g - b) / delta + (g < b ? 6 : 0)) / 6;
+    } else if (max === g) {
+      h = ((b - r) / delta + 2) / 6;
+    } else {
+      h = ((r - g) / delta + 4) / 6;
+    }
+  }
+
+  return [h * 360, s, l];
+};
+
+const colors_match = (rgb1: number[], rgb2: number[]): boolean => {
+  const [h1, s1, l1] = rgb_to_hsl(rgb1[0], rgb1[1], rgb1[2]);
+  const [h2, s2, l2] = rgb_to_hsl(rgb2[0], rgb2[1], rgb2[2]);
+
+  // Don't match if one color is very dark/light and the other isn't
+  const very_dark_threshold = 0.15;
+  const very_light_threshold = 0.85;
+  const one_very_dark = (l1 < very_dark_threshold) !== (l2 < very_dark_threshold);
+  const one_very_light = (l1 > very_light_threshold) !== (l2 > very_light_threshold);
+  
+  if (one_very_dark || one_very_light) {
+    return false;
+  }
+
+  // Handle hue wraparound (359° and 1° are very close)
+  let hue_diff = Math.abs(h1 - h2);
+  if (hue_diff > 180) {
+    hue_diff = 360 - hue_diff;
+  }
+
+  // If both colors are very desaturated (nearly gray), ignore hue
+  const both_desaturated = s1 < 0.1 && s2 < 0.1;
+
+  return (
+    (hue_diff < HUE_THRESHOLD || both_desaturated) &&
+    Math.abs(s1 - s2) < SATURATION_THRESHOLD &&
+    Math.abs(l1 - l2) < LIGHTNESS_THRESHOLD
+  );
 };
 
 export const getImageIntersect = (
@@ -22,10 +75,10 @@ export const getImageIntersect = (
     for (let y = 0; y < image1.height; y++) {
       const p1 = image1.getPixelXY(x, y);
       const p2 = image2.getPixelXY(x, y);
-      const diff = rgb_difference(p1, p2);
-      const p3 = diff < THRESHOLD ? p1 : [0, 0, 0, 0];
+      const match = colors_match(p1, p2);
+      const p3 = match ? p1 : [0, 0, 0, 0];
       result.setPixelXY(x, y, p3);
-      counter = diff < THRESHOLD && p1.some((x) => x) ? counter + 1 : counter;
+      counter = match && p1.some((x) => x) ? counter + 1 : counter;
       actualMax = p1.some((x) => x) ? actualMax + 1 : actualMax;
     }
   }

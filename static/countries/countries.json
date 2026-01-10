@@ -494,12 +494,6 @@
     "name": "French Polynesia"
   },
   {
-    "capital": "Saint-Pierre, R\u00e9union",
-    "code": "tf",
-    "continent": "Africa",
-    "name": "French Southern Territories"
-  },
-  {
     "capital": "Libreville",
     "code": "ga",
     "continent": "Africa",
@@ -1122,12 +1116,6 @@
     "name": "R\u00e9union"
   },
   {
-    "capital": "Gustavia",
-    "code": "bl",
-    "continent": "North America",
-    "name": "Saint Barth\u00e9lemy"
-  },
-  {
     "capital": "Jamestown",
     "code": "sh-hl",
     "continent": "Africa",
@@ -1150,18 +1138,6 @@
     "code": "lc",
     "continent": "North America",
     "name": "Saint Lucia"
-  },
-  {
-    "capital": "Marigot",
-    "code": "mf",
-    "continent": "North America",
-    "name": "Saint Martin"
-  },
-  {
-    "capital": "Saint-Pierre",
-    "code": "pm",
-    "continent": "North America",
-    "name": "Saint Pierre and Miquelon"
   },
   {
     "capital": "Kingstown",
