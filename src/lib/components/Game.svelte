@@ -95,9 +95,9 @@
       let image1: Image = await Image.load(targetCountryState.targetFlagImgUrl);
       let image2: Image = await Image.load(guessedFlagUrl);
 
-      let intersect = getImageIntersect(image1, image2, 0.5);
+      let intersect = getImageIntersect(image1, image2);
 
-      currentResult = getImageUnion(currentResult, intersect.Image);
+      currentResult = getImageUnion(currentResult, intersect.result);
 
       if (guessedCountry.name === targetCountryState.targetCountry?.name) {
         gameWon = true;
@@ -105,9 +105,9 @@
 
       guessesState.addNewGuess({
         country: guessedCountry,
-        score: intersect.percent,
+        score: intersect.percentage,
         img: image2,
-        intersectionImg: intersect.Image,
+        intersectionImg: intersect.result,
         correct: gameWon,
       });
 
