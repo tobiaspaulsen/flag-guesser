@@ -1,6 +1,8 @@
-<script>
+<script lang="ts">
   import '../app.css';
+  import type { Snippet } from 'svelte';
+  
+  let { children }: { children: Snippet } = $props();
 </script>
 
-<!-- svelte-ignore slot_element_deprecated -->
-<slot />
+{@render children()}

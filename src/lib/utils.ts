@@ -28,14 +28,14 @@ export const getPreviousGameState = async (
     const image = await Image.load(
       asset(`/countries/png/${guess.countryCode}.png`),
     );
-    const intersect = getImageIntersect(targetImage, image, 0.5);
-    currentImageResult = getImageUnion(currentImageResult, intersect.Image);
+    const intersect = getImageIntersect(targetImage, image);
+    currentImageResult = getImageUnion(currentImageResult, intersect.result);
 
     guesses.push({
       country,
-      score: intersect.percent,
+      score: intersect.percentage,
       img: image,
-      intersectionImg: intersect.Image,
+      intersectionImg: intersect.result,
       correct: guess.countryCode === persistedGame.targetCountryCode,
     });
   }

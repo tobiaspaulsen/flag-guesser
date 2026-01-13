@@ -70,12 +70,7 @@ const colors_match = (rgb1: number[], rgb2: number[]): boolean => {
 export const getImageIntersect = (
   image1: Image,
   image2: Image,
-  imageScaleRatio: number,
-): { Image: Image; percent: number } => {
-  image2.resize({
-    width: image1.width * imageScaleRatio,
-    height: image1.height * imageScaleRatio,
-  });
+): { result: Image; percentage: number } => {
   const result = new Image({ width: image1.width, height: image1.height });
   let counter = 0;
   let actualMax = 0;
@@ -93,7 +88,7 @@ export const getImageIntersect = (
 
   const percentage = Math.floor((counter / actualMax) * 100);
 
-  return { Image: result, percent: percentage };
+  return { result, percentage };
 };
 
 export const getImageUnion = (
