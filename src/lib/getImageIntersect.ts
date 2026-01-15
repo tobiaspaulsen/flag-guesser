@@ -1,70 +1,41 @@
 import { Image } from 'image-js';
 
-const HUE_THRESHOLD = 30; // Maximum hue difference in degrees (0-360)
-const SATURATION_THRESHOLD = 0.5; // Maximum saturation difference (0-1)
-const LIGHTNESS_THRESHOLD = 0.5; // Maximum lightness difference (0-1)
+const RGB_DISTANCE_THRESHOLD = 108;
+const LUMINANCE_DIFF_THRESHOLD = 60;
 
-const rgb_to_hsl = (
-  r: number,
-  g: number,
-  b: number,
-): [number, number, number] => {
-  r /= 255;
-  g /= 255;
-  b /= 255;
+const luminance = (r: number, g: number, b: number): number =>
+  0.2126 * r + 0.7152 * g + 0.0722 * b;
 
+const saturation = (r: number, g: number, b: number): number => {
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
-  const delta = max - min;
-
-  let h = 0;
-  let s = 0;
-  const l = (max + min) / 2;
-
-  if (delta !== 0) {
-    s = l > 0.5 ? delta / (2 - max - min) : delta / (max + min);
-
-    if (max === r) {
-      h = ((g - b) / delta + (g < b ? 6 : 0)) / 6;
-    } else if (max === g) {
-      h = ((b - r) / delta + 2) / 6;
-    } else {
-      h = ((r - g) / delta + 4) / 6;
-    }
-  }
-
-  return [h * 360, s, l];
+  if (max === 0) return 0;
+  return (max - min) / max;
 };
 
 const colors_match = (rgb1: number[], rgb2: number[]): boolean => {
-  const [h1, s1, l1] = rgb_to_hsl(rgb1[0], rgb1[1], rgb1[2]);
-  const [h2, s2, l2] = rgb_to_hsl(rgb2[0], rgb2[1], rgb2[2]);
+  const [r1, g1, b1] = rgb1;
+  const [r2, g2, b2] = rgb2;
 
-  // Don't match if one color is very dark/light and the other isn't
-  const very_dark_threshold = 0.15;
-  const very_light_threshold = 0.85;
-  const one_very_dark = l1 < very_dark_threshold !== l2 < very_dark_threshold;
-  const one_very_light =
-    l1 > very_light_threshold !== l2 > very_light_threshold;
+  const l1 = luminance(r1, g1, b1);
+  const l2 = luminance(r2, g2, b2);
+  const s1 = saturation(r1, g1, b1);
+  const s2 = saturation(r2, g2, b2);
 
-  if (one_very_dark || one_very_light) {
+  const oneGrayOneColored =
+    (s1 < 0.15 && s2 > 0.3) || (s2 < 0.15 && s1 > 0.3);
+  if (oneGrayOneColored) {
     return false;
   }
 
-  // Handle hue wraparound (359° and 1° are very close)
-  let hue_diff = Math.abs(h1 - h2);
-  if (hue_diff > 180) {
-    hue_diff = 360 - hue_diff;
+  if (Math.abs(l1 - l2) > LUMINANCE_DIFF_THRESHOLD) {
+    return false;
   }
 
-  // If both colors are very desaturated (nearly gray), ignore hue
-  const both_desaturated = s1 < 0.1 && s2 < 0.1;
+  const distanceSquared = (r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2;
+  const thresholdSquared = RGB_DISTANCE_THRESHOLD ** 2;
 
-  return (
-    (hue_diff < HUE_THRESHOLD || both_desaturated) &&
-    Math.abs(s1 - s2) < SATURATION_THRESHOLD &&
-    Math.abs(l1 - l2) < LIGHTNESS_THRESHOLD
-  );
+  return distanceSquared <= thresholdSquared;
 };
 
 export const getImageIntersect = (
