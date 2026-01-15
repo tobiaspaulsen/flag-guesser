@@ -29,10 +29,9 @@
 
   const db = $derived(
     new Fuse(countriesState.countries, {
-      ignoreLocation: true,
       shouldSort: true,
-      threshold: 0.2,
-      distance: 100,
+      threshold: 0.15,
+      distance: 400,
       minMatchCharLength: 1,
       keys: ['name'],
       getFn: (obj, path) => {
