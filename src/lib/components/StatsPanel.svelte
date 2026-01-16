@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { fade } from 'svelte/transition';
   import type { GameStats } from '$lib/state.svelte';
 
   let { gameStats }: { gameStats: GameStats } = $props();
@@ -25,7 +26,11 @@
   );
 </script>
 
-<div class="w-full bg-primary-900 border-2 border-primary-100 rounded-lg p-6">
+<div
+  in:fade={{ duration: 250 }}
+  out:fade={{ duration: 150 }}
+  class="w-full bg-primary-900 border-2 border-primary-100 rounded-lg p-6"
+>
   <h2 class="text-2xl font-bold text-secondary-600 mb-4 text-center">
     Statistics
   </h2>

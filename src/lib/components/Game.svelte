@@ -20,6 +20,8 @@
   import StatsPanel from './StatsPanel.svelte';
   import type { PreviousGame } from '$lib/utils';
 
+  const OVERLAY_DURATION_MS = 1000;
+
   let gameOver: boolean = $state(false);
   let gameWon: boolean = $state(false);
 
@@ -90,7 +92,7 @@
       showOverlay = true;
       setTimeout(() => {
         showOverlay = false;
-      }, 800);
+      }, OVERLAY_DURATION_MS);
 
       let image1: Image = await Image.load(targetCountryState.targetFlagImgUrl);
       let image2: Image = await Image.load(guessedFlagUrl);
@@ -99,16 +101,15 @@
 
       currentResult = getImageUnion(currentResult, intersect.result);
 
-      if (guessedCountry.name === targetCountryState.targetCountry?.name) {
-        gameWon = true;
-      }
+      const isCorrectGuess =
+        guessedCountry.name === targetCountryState.targetCountry?.name;
 
       guessesState.addNewGuess({
         country: guessedCountry,
         score: intersect.percentage,
         img: image2,
         intersectionImg: intersect.result,
-        correct: gameWon,
+        correct: isCorrectGuess,
       });
 
       if (targetCountryState.isDailyGame) {
@@ -116,9 +117,19 @@
         stats = getGameStats();
       }
 
-      if (guessesState.guessesList.length >= MAX_GUESSES) {
-        gameOver = true;
-        imgUrl = targetCountryState.targetFlagImgUrl;
+      const reachedMaxGuesses =
+        guessesState.guessesList.length >= MAX_GUESSES;
+
+      if (isCorrectGuess || reachedMaxGuesses) {
+        setTimeout(() => {
+          if (isCorrectGuess) {
+            gameWon = true;
+          }
+          if (reachedMaxGuesses) {
+            gameOver = true;
+            imgUrl = targetCountryState.targetFlagImgUrl;
+          }
+        }, OVERLAY_DURATION_MS);
       }
     } catch (error) {
       console.error('Error loading or processing images:', error);

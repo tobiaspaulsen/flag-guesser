@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { fade } from 'svelte/transition';
   import type { ITargetCountryState } from '$lib/state.svelte';
 
   let {
@@ -24,6 +25,8 @@
 
 {#if gameWon || gameOver}
   <div
+    in:fade={{ duration: 250 }}
+    out:fade={{ duration: 150 }}
     class="w-full bg-primary-900 border-2 border-primary-100 rounded-lg p-6 text-center"
   >
     <div
