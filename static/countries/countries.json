@@ -478,12 +478,6 @@
     "name": "France"
   },
   {
-    "capital": "Cayenne",
-    "code": "gf",
-    "continent": "South America",
-    "name": "French Guiana"
-  },
-  {
     "capital": "Papeete",
     "code": "pf",
     "continent": "Oceania",
@@ -546,12 +540,6 @@
     "code": "gd",
     "continent": "North America",
     "name": "Grenada"
-  },
-  {
-    "capital": "Basse-Terre",
-    "code": "gp",
-    "continent": "North America",
-    "name": "Guadeloupe"
   },
   {
     "capital": "Hag\u00e5t\u00f1a",
