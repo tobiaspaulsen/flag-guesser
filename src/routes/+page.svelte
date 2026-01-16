@@ -39,7 +39,7 @@
     Flag Guesser
   </h1>
 </header>
-<div class="w-[min(75vw,400px)] mx-auto">
+<div class="w-[min(85vw,400px)] mx-auto">
   {#if loadedPreviousGame && countriesState.loaded && targetCountryState && guessesState}
     <Game
       {previousGameState}
