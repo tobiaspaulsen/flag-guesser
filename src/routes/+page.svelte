@@ -16,10 +16,16 @@
   $effect(() => {
     if (latestDailyGame) {
       const previousGamePromise = getPreviousGameState(latestDailyGame);
-      previousGamePromise.then((result) => {
-        previousGameState = result;
-        loadedPreviousGame = true;
-      });
+      previousGamePromise
+        .then((result) => {
+          previousGameState = result;
+        })
+        .catch((error) => {
+          console.error('Error loading previous game state:', error);
+        })
+        .finally(() => {
+          loadedPreviousGame = true;
+        });
     } else {
       loadedPreviousGame = true;
     }
