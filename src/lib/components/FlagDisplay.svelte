@@ -21,15 +21,38 @@
         class="absolute inset-0 object-contain overlay-animation z-10"
       />
     {/if}
-    <img src={imgUrl} alt="" class="absolute inset-0 object-contain" />
+    <img
+      src={imgUrl}
+      alt=""
+      class="absolute inset-0 object-contain image-animation"
+    />
   {:else}
     <div class="text-primary-100 text-center p-4"></div>
   {/if}
 </div>
 
 <style>
+  .image-animation {
+    animation: imageFade 1s ease-in-out;
+  }
+
   .overlay-animation {
     animation: overlayFade 1s ease-in-out;
+  }
+
+  @keyframes imageFade {
+    0% {
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.5;
+    }
+    20% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 1;
+    }
   }
 
   @keyframes overlayFade {
