@@ -30,7 +30,7 @@
   const db = $derived(
     new Fuse(countriesState.countries, {
       shouldSort: true,
-      threshold: 0.15,
+      threshold: 0.12,
       distance: 400,
       minMatchCharLength: 1,
       keys: ['name'],
