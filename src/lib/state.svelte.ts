@@ -110,6 +110,8 @@ function updateGameStats(won: boolean, guessCount: number): void {
   }
 
   stats.played++;
+  
+  const previousPlayedDate = stats.lastPlayedDate;
   stats.lastPlayedDate = today;
 
   if (won) {
@@ -117,7 +119,7 @@ function updateGameStats(won: boolean, guessCount: number): void {
     stats.guessDistribution[guessCount] =
       (stats.guessDistribution[guessCount] || 0) + 1;
 
-    if (stats.lastPlayedDate === yesterday || stats.currentStreak === 0) {
+    if (previousPlayedDate === yesterday || stats.currentStreak === 0) {
       stats.currentStreak++;
     } else {
       stats.currentStreak = 1;
