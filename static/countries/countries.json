@@ -166,12 +166,6 @@
     "name": "Bolivia"
   },
   {
-    "capital": "Kralendijk",
-    "code": "bq",
-    "continent": "South America",
-    "name": "Bonaire, Sint Eustatius and Saba"
-  },
-  {
     "capital": "Sarajevo",
     "code": "ba",
     "continent": "Europe",
@@ -1094,12 +1088,6 @@
     "name": "Rwanda"
   },
   {
-    "capital": "Saint-Denis",
-    "code": "re",
-    "continent": "Africa",
-    "name": "R\u00e9union"
-  },
-  {
     "capital": "Jamestown",
     "code": "sh-hl",
     "continent": "Africa",
@@ -1272,12 +1260,6 @@
     "code": "sr",
     "continent": "South America",
     "name": "Suriname"
-  },
-  {
-    "capital": "Longyearbyen",
-    "code": "sj",
-    "continent": "Europe",
-    "name": "Svalbard and Jan Mayen"
   },
   {
     "capital": "Stockholm",
