@@ -4,11 +4,7 @@ const HUE_THRESHOLD = 30; // Maximum hue difference in degrees (0-360)
 const SATURATION_THRESHOLD = 0.5; // Maximum saturation difference (0-1)
 const LIGHTNESS_THRESHOLD = 0.5; // Maximum lightness difference (0-1)
 
-const rgb_to_hsl = (
-  r: number,
-  g: number,
-  b: number,
-): [number, number, number] => {
+const rgb_to_hsl = (r: number, g: number, b: number): [number, number, number] => {
   r /= 255;
   g /= 255;
   b /= 255;
@@ -36,6 +32,8 @@ const rgb_to_hsl = (
   return [h * 360, s, l];
 };
 
+// TODO: Orange matches red and green doesn't match green — hue thresholding
+// issue where nearby hues on the color wheel bleed into adjacent ranges.
 const colors_match = (rgb1: number[], rgb2: number[]): boolean => {
   const [h1, s1, l1] = rgb_to_hsl(rgb1[0], rgb1[1], rgb1[2]);
   const [h2, s2, l2] = rgb_to_hsl(rgb2[0], rgb2[1], rgb2[2]);
@@ -71,18 +69,35 @@ export const getImageIntersect = (
   image2: Image,
 ): { result: Image; percentage: number } => {
   const result = new Image({ width: image1.width, height: image1.height });
+  const channels = image1.channels;
+  const data1 = image1.data;
+  const data2 = image2.data;
+  const dataOut = result.data;
+
   let counter = 0;
   let actualMax = 0;
-  for (let x = 0; x < image1.width; x++) {
-    for (let y = 0; y < image1.height; y++) {
-      const p1 = image1.getPixelXY(x, y);
-      const p2 = image2.getPixelXY(x, y);
-      const match = colors_match(p1, p2);
-      const p3 = match ? p1 : [0, 0, 0, 0];
-      result.setPixelXY(x, y, p3);
-      counter = match && p1.some((x) => x) ? counter + 1 : counter;
-      actualMax = p1.some((x) => x) ? actualMax + 1 : actualMax;
+
+  for (let i = 0; i < data1.length; i += channels) {
+    const r1 = data1[i], g1 = data1[i + 1], b1 = data1[i + 2];
+    const r2 = data2[i], g2 = data2[i + 1], b2 = data2[i + 2];
+
+    const nonTransparent = channels < 4 || data1[i + 3] > 0;
+    const match = nonTransparent && colors_match([r1, g1, b1], [r2, g2, b2]);
+
+    if (match) {
+      dataOut[i] = r1;
+      dataOut[i + 1] = g1;
+      dataOut[i + 2] = b1;
+      if (channels >= 4) dataOut[i + 3] = data1[i + 3];
+      counter++;
+    } else {
+      dataOut[i] = 0;
+      dataOut[i + 1] = 0;
+      dataOut[i + 2] = 0;
+      if (channels >= 4) dataOut[i + 3] = 0;
     }
+
+    if (nonTransparent) actualMax++;
   }
 
   const percentage = Math.floor((counter / actualMax) * 100);
@@ -98,20 +113,21 @@ export const getImageUnion = (
     return image2;
   }
 
-  image2.resize({ width: image1.width, height: image1.height });
+  // Clone image2 to avoid mutating the caller's image
+  const resized = image2.resize({ width: image1.width, height: image1.height });
   const result = new Image({ width: image1.width, height: image1.height });
+  const channels = image1.channels;
+  const data1 = image1.data;
+  const data2 = resized.data;
+  const dataOut = result.data;
 
-  for (let x = 0; x < image1.width; x++) {
-    for (let y = 0; y < image1.height; y++) {
-      const p1 = image1.getPixelXY(x, y);
-      const p2 = image2.getPixelXY(x, y);
-
-      if (p2.some((x) => x)) {
-        result.setPixelXY(x, y, p2);
-      } else {
-        result.setPixelXY(x, y, p1);
-      }
-    }
+  for (let i = 0; i < data1.length; i += channels) {
+    const hasP2 = channels < 4 || data2[i + 3] > 0;
+    const src = hasP2 ? data2 : data1;
+    dataOut[i] = src[i];
+    dataOut[i + 1] = src[i + 1];
+    dataOut[i + 2] = src[i + 2];
+    if (channels >= 4) dataOut[i + 3] = src[i + 3];
   }
 
   return result;

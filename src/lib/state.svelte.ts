@@ -19,7 +19,9 @@ export interface IGuess {
   country: Country;
   score: number;
   img: Image;
+  imgUrl: string;
   intersectionImg: Image;
+  intersectionImgUrl: string;
   correct: boolean;
 }
 
@@ -67,7 +69,7 @@ function saveUserSettings(settings: UserSettings): void {
 }
 
 export const createUserSettings = (): UserSettings => {
-  let settings = $state(loadUserSettings());
+  const settings = $state(loadUserSettings());
 
   $effect(() => {
     saveUserSettings(settings);
@@ -189,6 +191,7 @@ export interface ITargetCountryState {
   resetTarget: () => void;
 }
 
+// Daily index uses UTC days — the flag changes at UTC midnight, not local midnight.
 function getTodaysFlagIndex(totalCountries: number): number {
   const today = new Date();
   const diffTime = today.getTime();

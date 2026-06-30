@@ -20,7 +20,7 @@
   import StatsPanel from './StatsPanel.svelte';
   import type { PreviousGame } from '$lib/utils';
 
-  const OVERLAY_DURATION_MS = 1000;
+  const OVERLAY_DURATION_MS = 600;
 
   let gameOver: boolean = $state(false);
   let gameWon: boolean = $state(false);
@@ -43,42 +43,41 @@
     targetCountryState: ITargetCountryState;
     previousGameState: PreviousGame | null;
   } = $props();
-  let guessCountryCode: string | undefined = $state();
 
   let currentResult: Image | undefined = $state();
+  let currentResultUrl: string | undefined = $state();
+  let gameOverFlagUrl: string | undefined = $state();
+  let isComputingGuess: boolean = $state(false);
+
   let imgUrl: string | undefined = $derived(
-    hoveredGuessIndex !== null && guessesState.guessesList[hoveredGuessIndex]
-      ? guessesState.guessesList[hoveredGuessIndex].intersectionImg.toDataURL()
-      : currentResult?.toDataURL(),
+    gameOverFlagUrl ??
+      (hoveredGuessIndex !== null && guessesState.guessesList[hoveredGuessIndex]
+        ? guessesState.guessesList[hoveredGuessIndex].intersectionImgUrl
+        : currentResultUrl),
   );
 
   untrack(() => {
     if (previousGameState) {
       for (const pastGuess of previousGameState.guesses) {
-        guessesState.addNewGuess({
-          country: pastGuess.country,
-          score: pastGuess.score,
-          img: pastGuess.img,
-          intersectionImg: pastGuess.intersectionImg,
-          correct: pastGuess.correct,
-        });
+        guessesState.addNewGuess(pastGuess);
       }
 
       currentResult = previousGameState.resultImage;
+      currentResultUrl = previousGameState.resultImage?.toDataURL();
 
       if (previousGameState.won) {
         gameWon = true;
       }
       if (previousGameState.guesses.length >= MAX_GUESSES) {
         gameOver = true;
-        imgUrl = targetCountryState.targetFlagImgUrl;
+        gameOverFlagUrl = targetCountryState.targetFlagImgUrl;
       }
     }
   });
 
   const checkGuess = async (guess: string) => {
     let guessedCountry = countriesState.countries.find(
-      (country) => country.name.toLowerCase() === guess.trim().toLowerCase(),
+      (country) => country.name === guess,
     );
 
     if (!guessedCountry) {
@@ -86,6 +85,7 @@
     }
 
     try {
+      isComputingGuess = true;
       guessedFlagUrl = asset(
         `/countries/png/${guessedCountry.countryCode}.png`,
       );
@@ -100,6 +100,8 @@
       let intersect = getImageIntersect(image1, image2);
 
       currentResult = getImageUnion(currentResult, intersect.result);
+      currentResultUrl = currentResult.toDataURL();
+      isComputingGuess = false;
 
       const isCorrectGuess =
         guessedCountry.name === targetCountryState.targetCountry?.name;
@@ -108,7 +110,9 @@
         country: guessedCountry,
         score: intersect.percentage,
         img: image2,
+        imgUrl: image2.toDataURL(),
         intersectionImg: intersect.result,
+        intersectionImgUrl: intersect.result.toDataURL(),
         correct: isCorrectGuess,
       });
 
@@ -127,11 +131,12 @@
           }
           if (reachedMaxGuesses) {
             gameOver = true;
-            imgUrl = targetCountryState.targetFlagImgUrl;
+            gameOverFlagUrl = targetCountryState.targetFlagImgUrl;
           }
         }, OVERLAY_DURATION_MS);
       }
     } catch (error) {
+      isComputingGuess = false;
       console.error('Error loading or processing images:', error);
     }
   };
@@ -139,8 +144,9 @@
   const restartGame = () => {
     gameOver = false;
     gameWon = false;
-    guessCountryCode = undefined;
     currentResult = undefined;
+    currentResultUrl = undefined;
+    gameOverFlagUrl = undefined;
     showOverlay = false;
     guessedFlagUrl = '';
     guessesState.resetGuesses();
@@ -151,7 +157,7 @@
 <div class="flex flex-col items-center gap-5 w-full">
   <FlagHeader {targetCountryState} bind:easyMode={userSettings.easyMode} />
 
-  <FlagDisplay {showOverlay} overlayFlagUrl={guessedFlagUrl} {imgUrl} />
+  <FlagDisplay {showOverlay} overlayFlagUrl={guessedFlagUrl} {imgUrl} animKey={guessesState.guessesList.length} {isComputingGuess} />
 
   <FlagResultPanel {gameWon} {gameOver} {targetCountryState} {restartGame} />
 
