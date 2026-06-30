@@ -46,7 +46,6 @@
     countryImgSrc: string;
   }[] = $state([]);
   let highlightIndex: number = $state(0);
-  let searchInput: HTMLInputElement = $state()!;
   let formElement: HTMLFormElement = $state()!;
   let listContainer: HTMLUListElement = $state()!;
 
@@ -157,17 +156,10 @@
 
   const handleSubmit = (e: Event) => {
     e.preventDefault();
-    const isDuplicate = guessesState.guessedCountries.some(
-      (g) => g.name.toLowerCase() === guessString.trim().toLowerCase(),
-    );
-    if (
-      disabled ||
-      !guessString.trim() ||
-      filteredCountries.length > 0 ||
-      isDuplicate
-    )
-      return;
-    checkGuess(guessString);
+    if (disabled) return;
+    if (filteredCountries[highlightIndex]) {
+      selectCountry(filteredCountries[highlightIndex].countryName);
+    }
   };
 
   const handleClickOutside = (e: MouseEvent) => {
@@ -193,7 +185,6 @@
         type="text"
         placeholder="Search for a country..."
         {disabled}
-        bind:this={searchInput}
         bind:value={guessString}
         oninput={filterCountries}
         onfocus={filterCountries}
@@ -223,11 +214,7 @@
     {/if}
   </form>
   <button
-    disabled={disabled ||
-      guessString.trim().length === 0 ||
-      guessesState.guessedCountries.some(
-        (g) => g.name.toLowerCase() === guessString.trim().toLowerCase(),
-      )}
+    disabled={disabled || !filteredCountries[highlightIndex]}
     class="bg-secondary-900 h-11 p-2 px-4 rounded self-start text-primary-50 font-semibold hover:scale-[1.02] active:scale-95 transition-all disabled:bg-secondary-900/30 disabled:text-secondary-100/50 disabled:cursor-not-allowed"
     onclick={() => {
       if (filteredCountries[highlightIndex])

@@ -3,10 +3,14 @@
     showOverlay,
     overlayFlagUrl,
     imgUrl,
+    animKey,
+    isComputingGuess,
   }: {
     showOverlay: boolean;
     overlayFlagUrl: string;
     imgUrl: string | undefined;
+    animKey: number;
+    isComputingGuess: boolean;
   } = $props();
 </script>
 
@@ -21,13 +25,15 @@
         class="absolute inset-0 object-contain overlay-animation z-10"
       />
     {/if}
-    <img
-      src={imgUrl}
-      alt=""
-      class="absolute inset-0 object-contain image-animation"
-    />
-  {:else}
-    <div class="text-primary-100 text-center p-4"></div>
+    {#key animKey}
+      <img
+        src={imgUrl}
+        alt=""
+        class="absolute inset-0 object-contain image-animation"
+      />
+    {/key}
+  {:else if isComputingGuess}
+    <div class="text-primary-100 text-center p-4 animate-pulse">Loading…</div>
   {/if}
 </div>
 
@@ -37,7 +43,7 @@
   }
 
   .overlay-animation {
-    animation: overlayFade 1s ease-in-out;
+    animation: overlayFade 0.6s ease-in-out;
   }
 
   @keyframes imageFade {

@@ -13,7 +13,7 @@
     Your guesses
   </div>
 
-  {#each Array(5) as _, i}
+  {#each Array.from({ length: 5 }, (_, i) => i) as i}
     {@const guess = guessesState.guessesList[i]}
     {@const isCorrect = guess?.correct}
     <div
@@ -27,10 +27,10 @@
       onmouseleave={() => (hoveredGuessIndex = null)}
     >
       <div class="w-20 flex items-center justify-center bg-primary-100/15 p-2">
-        {#if guess?.img}
+        {#if guess?.imgUrl}
           <img
             class="h-full object-cover rounded-sm"
-            src={guess.img.toDataURL()}
+            src={guess.imgUrl}
             alt="Flag of {guess.country.name}"
           />
         {:else}

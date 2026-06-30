@@ -33,9 +33,12 @@
 
   const countriesState = createCountriesState();
 
-  let targetCountryState = $derived(
-    countriesState.loaded ? createTargetCountryState(countriesState) : null,
-  );
+  let targetCountryState: ReturnType<typeof createTargetCountryState> | null = $state(null);
+  $effect(() => {
+    if (countriesState.loaded && !targetCountryState) {
+      targetCountryState = createTargetCountryState(countriesState);
+    }
+  });
 
   let guessesState = createGuessesState();
 </script>
