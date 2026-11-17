@@ -110,7 +110,7 @@ function updateGameStats(won: boolean, guessCount: number): void {
   }
 
   stats.played++;
-  
+
   const previousPlayedDate = stats.lastPlayedDate;
   stats.lastPlayedDate = today;
 

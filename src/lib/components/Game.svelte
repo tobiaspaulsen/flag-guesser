@@ -121,8 +121,7 @@
         stats = getGameStats();
       }
 
-      const reachedMaxGuesses =
-        guessesState.guessesList.length >= MAX_GUESSES;
+      const reachedMaxGuesses = guessesState.guessesList.length >= MAX_GUESSES;
 
       if (isCorrectGuess || reachedMaxGuesses) {
         setTimeout(() => {
@@ -157,7 +156,13 @@
 <div class="flex flex-col items-center gap-5 w-full">
   <FlagHeader {targetCountryState} bind:easyMode={userSettings.easyMode} />
 
-  <FlagDisplay {showOverlay} overlayFlagUrl={guessedFlagUrl} {imgUrl} animKey={guessesState.guessesList.length} {isComputingGuess} />
+  <FlagDisplay
+    {showOverlay}
+    overlayFlagUrl={guessedFlagUrl}
+    {imgUrl}
+    animKey={guessesState.guessesList.length}
+    {isComputingGuess}
+  />
 
   <FlagResultPanel {gameWon} {gameOver} {targetCountryState} {restartGame} />
 

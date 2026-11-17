@@ -33,7 +33,8 @@
 
   const countriesState = createCountriesState();
 
-  let targetCountryState: ReturnType<typeof createTargetCountryState> | null = $state(null);
+  let targetCountryState: ReturnType<typeof createTargetCountryState> | null =
+    $state(null);
   $effect(() => {
     if (countriesState.loaded && !targetCountryState) {
       targetCountryState = createTargetCountryState(countriesState);
