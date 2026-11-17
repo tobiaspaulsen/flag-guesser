@@ -57,7 +57,11 @@
   );
 
   untrack(() => {
-    if (previousGameState) {
+    if (
+      previousGameState &&
+      previousGameState.targetCountryCode ===
+        targetCountryState.targetCountry.countryCode
+    ) {
       for (const pastGuess of previousGameState.guesses) {
         guessesState.addNewGuess(pastGuess);
       }
@@ -76,11 +80,23 @@
   });
 
   const checkGuess = async (guess: string) => {
-    let guessedCountry = countriesState.countries.find(
+    const guessedCountry = countriesState.countries.find(
       (country) => country.name === guess,
     );
 
-    if (!guessedCountry) {
+    const guesses = guessesState.guessesList;
+    // gameWon/gameOver lag behind the overlay animation.
+    if (
+      !guessedCountry ||
+      isComputingGuess ||
+      gameWon ||
+      gameOver ||
+      guesses.length >= MAX_GUESSES ||
+      guesses.some(
+        (g) =>
+          g.correct || g.country.countryCode === guessedCountry.countryCode,
+      )
+    ) {
       return;
     }
 

@@ -95,31 +95,37 @@ function saveGameStats(stats: GameStats): void {
   localStorage.setItem(STORAGE_KEYS.GAME_STATS, JSON.stringify(stats));
 }
 
-function getYesterdayString(): string {
-  return getDateString(new Date(Date.now() - 24 * 60 * 60 * 1000));
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function getPreviousDateString(dateString: string): string {
+  return getDateString(Date.parse(dateString) - DAY_MS);
 }
 
-function updateGameStats(won: boolean, guessCount: number): void {
+function updateGameStats(
+  gameDate: string,
+  won: boolean,
+  guessCount: number,
+): void {
   const stats = getGameStats();
-  const today = getTodayString();
-  const yesterday = getYesterdayString();
 
-  // Only update if not already played today
-  if (stats.lastPlayedDate === today) {
+  if (stats.lastPlayedDate === gameDate) {
     return;
   }
 
   stats.played++;
 
   const previousPlayedDate = stats.lastPlayedDate;
-  stats.lastPlayedDate = today;
+  stats.lastPlayedDate = gameDate;
 
   if (won) {
     stats.won++;
     stats.guessDistribution[guessCount] =
       (stats.guessDistribution[guessCount] || 0) + 1;
 
-    if (previousPlayedDate === yesterday || stats.currentStreak === 0) {
+    if (
+      previousPlayedDate === getPreviousDateString(gameDate) ||
+      stats.currentStreak === 0
+    ) {
       stats.currentStreak++;
     } else {
       stats.currentStreak = 1;
@@ -186,24 +192,34 @@ export interface ITargetCountryState {
   readonly targetCountry: Country;
   readonly targetFlagImgUrl: string;
   readonly isDailyGame: boolean;
+  readonly gameDate: string;
   resetTarget: () => void;
 }
 
-// Daily index uses UTC days — the flag changes at UTC midnight, not local midnight.
-function getTodaysFlagIndex(totalCountries: number): number {
-  const today = new Date();
-  const diffTime = today.getTime();
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+function mulberry32(seed: number): () => number {
+  return () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), seed | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
-  let seed = diffDays;
-  seed = (seed * 9301 + 49297) % 233280;
-  const random = seed / 233280;
-
-  return Math.floor(random * totalCountries);
+// Seeded shuffle per pass through the list: same flag for every player, each
+// flag once per pass. Changes at UTC midnight.
+function getDailyFlagIndex(timeMs: number, totalCountries: number): number {
+  const day = Math.floor(timeMs / DAY_MS);
+  const random = mulberry32(Math.floor(day / totalCountries));
+  const order = Array.from({ length: totalCountries }, (_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order[day % totalCountries];
 }
 
 function getTodayString(): string {
-  return getDateString(new Date());
+  return getDateString(Date.now());
 }
 
 export function loadLatestDailyGameState(): PersistedGameState | null {
@@ -225,12 +241,26 @@ function saveGameState(state: PersistedGameState): void {
   localStorage.setItem(STORAGE_KEYS.DAILY_GAME_STATE, JSON.stringify(state));
 }
 
+// A resumed game keeps its original flag and date, even across midnight.
 export function createTargetCountryState(
   countriesState: ICountriesState,
+  resumedGame: PersistedGameState | null,
 ): ITargetCountryState {
-  const targetIndex = getTodaysFlagIndex(countriesState.countries.length);
+  const now = Date.now();
+  const resumedTarget = resumedGame
+    ? countriesState.countries.find(
+        (c) => c.countryCode === resumedGame.targetCountryCode,
+      )
+    : undefined;
 
-  let targetCountry = $state(countriesState.countries[targetIndex]);
+  let targetCountry = $state(
+    resumedTarget ??
+      countriesState.countries[
+        getDailyFlagIndex(now, countriesState.countries.length)
+      ],
+  );
+  const gameDate =
+    resumedTarget && resumedGame ? resumedGame.date : getDateString(now);
   let isDailyGameState = $state(true);
 
   return {
@@ -244,6 +274,9 @@ export function createTargetCountryState(
     },
     get isDailyGame() {
       return isDailyGameState;
+    },
+    get gameDate() {
+      return gameDate;
     },
     resetTarget: () => {
       isDailyGameState = false;
@@ -263,7 +296,7 @@ export const persistGameState = (
 ): void => {
   const won = guesses.some((g) => g.correct);
   const gameState: PersistedGameState = {
-    date: getTodayString(),
+    date: targetCountryState.gameDate,
     targetCountryCode: targetCountryState.targetCountry.countryCode,
     won,
     guesses: guesses.map((g) => ({
@@ -274,7 +307,7 @@ export const persistGameState = (
   saveGameState(gameState);
 
   if (won || guesses.length >= MAX_GUESSES) {
-    updateGameStats(won, guesses.length);
+    updateGameStats(targetCountryState.gameDate, won, guesses.length);
   }
 };
 

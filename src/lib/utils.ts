@@ -50,6 +50,6 @@ export const getPreviousGameState = async (
   };
 };
 
-export const getDateString = (date: Date): string => {
-  return date.toISOString().split('T')[0]; // YYYY-MM-DD
+export const getDateString = (timeMs: number): string => {
+  return new Date(timeMs).toISOString().split('T')[0]; // YYYY-MM-DD (UTC)
 };
