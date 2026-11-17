@@ -89,8 +89,12 @@ export const getImageIntersect = (
       g2 = data2[i + 1],
       b2 = data2[i + 2];
 
-    const nonTransparent = channels < 4 || data1[i + 3] > 0;
-    const match = nonTransparent && colors_match([r1, g1, b1], [r2, g2, b2]);
+    const targetOpaque = channels < 4 || data1[i + 3] > 0;
+    // Transparent pixels are black (0,0,0), so without this a guess's empty
+    // margin would "match" black areas of the target.
+    const guessOpaque = channels < 4 || data2[i + 3] > 0;
+    const match =
+      targetOpaque && guessOpaque && colors_match([r1, g1, b1], [r2, g2, b2]);
 
     if (match) {
       dataOut[i] = r1;
@@ -105,7 +109,7 @@ export const getImageIntersect = (
       if (channels >= 4) dataOut[i + 3] = 0;
     }
 
-    if (nonTransparent) actualMax++;
+    if (targetOpaque) actualMax++;
   }
 
   const percentage = Math.floor((counter / actualMax) * 100);
