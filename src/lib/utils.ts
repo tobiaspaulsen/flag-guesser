@@ -25,18 +25,15 @@ export const getPreviousGameState = async (
       name: guess.countryName,
     };
 
-    const image = await Image.load(
-      asset(`/countries/png/${guess.countryCode}.png`),
-    );
+    const imgUrl = asset(`/countries/png/${guess.countryCode}.png`);
+    const image = await Image.load(imgUrl);
     const intersect = getImageIntersect(targetImage, image);
     currentImageResult = getImageUnion(currentImageResult, intersect.result);
 
     guesses.push({
       country,
       score: intersect.percentage,
-      img: image,
-      imgUrl: image.toDataURL(),
-      intersectionImg: intersect.result,
+      imgUrl,
       intersectionImgUrl: intersect.result.toDataURL(),
       correct: guess.countryCode === persistedGame.targetCountryCode,
     });

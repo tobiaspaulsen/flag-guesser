@@ -1,4 +1,3 @@
-import { Image } from 'image-js';
 import { asset } from '$app/paths';
 import { getDateString } from './utils';
 
@@ -18,9 +17,7 @@ export type Country = {
 export interface IGuess {
   country: Country;
   score: number;
-  img: Image;
   imgUrl: string;
-  intersectionImg: Image;
   intersectionImgUrl: string;
   correct: boolean;
 }
@@ -141,10 +138,14 @@ function updateGameStats(
 export function createCountriesState(): ICountriesState {
   let countriesState: Country[] = $state([]);
   let loaded = $state(false);
+  let failed = $state(false);
 
   $effect(() => {
     fetch(asset('/countries/countries.json'))
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         countriesState = data.map(
           (country: { code: string; name: string }) => ({
@@ -153,6 +154,10 @@ export function createCountriesState(): ICountriesState {
           }),
         );
         loaded = true;
+      })
+      .catch((error) => {
+        console.error('Error loading countries:', error);
+        failed = true;
       });
   });
 
@@ -162,6 +167,9 @@ export function createCountriesState(): ICountriesState {
     },
     get loaded() {
       return loaded;
+    },
+    get failed() {
+      return failed;
     },
   };
 }
@@ -186,6 +194,7 @@ export interface PersistedGameState {
 export interface ICountriesState {
   readonly countries: Country[];
   readonly loaded: boolean;
+  readonly failed: boolean;
 }
 
 export interface ITargetCountryState {
@@ -216,6 +225,10 @@ function getDailyFlagIndex(timeMs: number, totalCountries: number): number {
     [order[i], order[j]] = [order[j], order[i]];
   }
   return order[day % totalCountries];
+}
+
+export function getNextDailyFlagTime(gameDate: string): number {
+  return Date.parse(gameDate) + DAY_MS;
 }
 
 function getTodayString(): string {
