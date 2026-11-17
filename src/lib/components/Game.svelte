@@ -195,7 +195,7 @@
   <FlagResultPanel {gameWon} {gameOver} {targetCountryState} {restartGame} />
 
   {#if (gameOver || gameWon) && targetCountryState.isDailyGame}
-    <StatsPanel gameStats={stats} />
+    <StatsPanel gameStats={stats} gameDate={targetCountryState.gameDate} />
   {/if}
 
   {#if !(gameOver || gameWon)}

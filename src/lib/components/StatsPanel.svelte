@@ -1,8 +1,10 @@
 <script lang="ts">
   import { fade } from 'svelte/transition';
   import { MAX_GUESSES, type GameStats } from '$lib/state.svelte';
+  import NextFlagCountdown from './NextFlagCountdown.svelte';
 
-  let { gameStats }: { gameStats: GameStats } = $props();
+  let { gameStats, gameDate }: { gameStats: GameStats; gameDate: string } =
+    $props();
 
   const winPercentage = $derived(
     gameStats.played > 0
@@ -76,4 +78,6 @@
       </div>
     {/each}
   </div>
+
+  <NextFlagCountdown {gameDate} />
 </div>
