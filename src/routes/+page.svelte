@@ -60,6 +60,8 @@
       {countriesState}
       {targetCountryState}
     />
+  {:else if countriesState.failed}
+    <p>Couldn't load the game. Please reload the page.</p>
   {:else}
     <p>Loading...</p>
   {/if}

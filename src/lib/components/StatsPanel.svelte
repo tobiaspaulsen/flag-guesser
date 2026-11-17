@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition';
-  import type { GameStats } from '$lib/state.svelte';
+  import { MAX_GUESSES, type GameStats } from '$lib/state.svelte';
 
   let { gameStats }: { gameStats: GameStats } = $props();
 
@@ -15,7 +15,7 @@
   );
 
   const guessDistributionArray = $derived(
-    Array.from({ length: 5 }, (_, i) => ({
+    Array.from({ length: MAX_GUESSES }, (_, i) => ({
       guesses: i + 1,
       count: gameStats.guessDistribution[i + 1] || 0,
       percentage:

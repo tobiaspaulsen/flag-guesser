@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { IGuessesState } from '$lib/state.svelte';
+  import { MAX_GUESSES, type IGuessesState } from '$lib/state.svelte';
 
   let {
     guessesState,
@@ -13,7 +13,7 @@
     Your guesses
   </div>
 
-  {#each Array.from({ length: 5 }, (_, i) => i) as i (i)}
+  {#each Array.from({ length: MAX_GUESSES }, (_, i) => i) as i (i)}
     {@const guess = guessesState.guessesList[i]}
     {@const isCorrect = guess?.correct}
     <div
@@ -25,6 +25,8 @@
       class:border-dashed={!guess}
       onmouseenter={() => guess && (hoveredGuessIndex = i)}
       onmouseleave={() => (hoveredGuessIndex = null)}
+      onfocus={() => guess && (hoveredGuessIndex = i)}
+      onblur={() => (hoveredGuessIndex = null)}
     >
       <div class="w-20 flex items-center justify-center bg-primary-100/15 p-2">
         {#if guess?.imgUrl}

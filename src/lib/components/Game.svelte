@@ -79,6 +79,20 @@
     }
   });
 
+  let targetImageCache: { url: string; image: Promise<Image> } | undefined;
+
+  const loadTargetImage = (): Promise<Image> => {
+    const url = targetCountryState.targetFlagImgUrl;
+    if (targetImageCache?.url !== url) {
+      const image = Image.load(url);
+      image.catch(() => {
+        if (targetImageCache?.image === image) targetImageCache = undefined;
+      });
+      targetImageCache = { url, image };
+    }
+    return targetImageCache.image;
+  };
+
   const checkGuess = async (guess: string) => {
     const guessedCountry = countriesState.countries.find(
       (country) => country.name === guess,
@@ -110,10 +124,10 @@
         showOverlay = false;
       }, OVERLAY_DURATION_MS);
 
-      let image1: Image = await Image.load(targetCountryState.targetFlagImgUrl);
-      let image2: Image = await Image.load(guessedFlagUrl);
+      const targetImage = await loadTargetImage();
+      const guessedImage = await Image.load(guessedFlagUrl);
 
-      let intersect = getImageIntersect(image1, image2);
+      const intersect = getImageIntersect(targetImage, guessedImage);
 
       currentResult = getImageUnion(currentResult, intersect.result);
       currentResultUrl = currentResult.toDataURL();
@@ -125,9 +139,7 @@
       guessesState.addNewGuess({
         country: guessedCountry,
         score: intersect.percentage,
-        img: image2,
-        imgUrl: image2.toDataURL(),
-        intersectionImg: intersect.result,
+        imgUrl: guessedFlagUrl,
         intersectionImgUrl: intersect.result.toDataURL(),
         correct: isCorrectGuess,
       });
