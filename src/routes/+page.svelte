@@ -37,7 +37,10 @@
     $state(null);
   $effect(() => {
     if (countriesState.loaded && !targetCountryState) {
-      targetCountryState = createTargetCountryState(countriesState);
+      targetCountryState = createTargetCountryState(
+        countriesState,
+        latestDailyGame,
+      );
     }
   });
 
