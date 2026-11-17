@@ -8,6 +8,8 @@
     targetCountryState: ITargetCountryState;
     easyMode: boolean;
   } = $props();
+
+  let showInfo = $state(false);
 </script>
 
 <div class="flex flex-col items-center gap-5">
@@ -36,12 +38,19 @@
       <button
         type="button"
         aria-label="Easy mode information"
+        aria-expanded={showInfo}
+        aria-describedby="easy-mode-info"
+        onclick={() => (showInfo = !showInfo)}
+        onblur={() => (showInfo = false)}
         class="w-5 h-5 rounded-full border-2 border-primary-50 text-primary-50 flex items-center justify-center text-xs font-bold leading-none"
       >
         i
       </button>
       <div
-        class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 p-2 bg-primary-900 text-primary-50 text-xs rounded shadow-lg border-2 border-primary-300 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10"
+        id="easy-mode-info"
+        role="tooltip"
+        class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 p-2 bg-primary-900 text-primary-50 text-xs rounded shadow-lg border-2 border-primary-300 group-hover:opacity-100 pointer-events-none transition-opacity z-10"
+        class:opacity-0={!showInfo}
       >
         Easy mode shows the flags in addition to the country names in the
         dropdown.

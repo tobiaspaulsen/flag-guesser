@@ -9,13 +9,11 @@
     checkGuess,
     easyMode,
     guessesState,
-    disabled = false,
   }: {
     countriesState: ICountriesState;
     checkGuess: (guess: string) => void;
     easyMode: boolean;
     guessesState: IGuessesState;
-    disabled?: boolean;
   } = $props();
 
   let guessString: string = $state('');
@@ -70,12 +68,6 @@
   });
 
   const filterCountries = (): void => {
-    if (disabled) {
-      filteredCountries = [];
-      highlightIndex = 0;
-      return;
-    }
-
     if (!guessString) {
       filteredCountries = countriesState.countries
         .filter(
@@ -112,8 +104,6 @@
   };
 
   const navigateList = (e: KeyboardEvent) => {
-    if (disabled) return;
-
     if (
       filteredCountries.length === 0 &&
       !guessString &&
@@ -156,14 +146,13 @@
 
   const handleSubmit = (e: Event) => {
     e.preventDefault();
-    if (disabled) return;
     if (filteredCountries[highlightIndex]) {
       selectCountry(filteredCountries[highlightIndex].countryName);
     }
   };
 
   const handleClickOutside = (e: MouseEvent) => {
-    if (!disabled && formElement && !formElement.contains(e.target as Node)) {
+    if (formElement && !formElement.contains(e.target as Node)) {
       closeDropdown();
     }
   };
@@ -184,7 +173,6 @@
         id="country-input"
         type="text"
         placeholder="Search for a country..."
-        {disabled}
         bind:value={guessString}
         oninput={filterCountries}
         onfocus={filterCountries}
@@ -214,7 +202,7 @@
     {/if}
   </form>
   <button
-    disabled={disabled || !filteredCountries[highlightIndex]}
+    disabled={!filteredCountries[highlightIndex]}
     class="bg-secondary-900 h-11 p-2 px-4 rounded self-start text-primary-50 font-semibold hover:scale-[1.02] active:scale-95 transition-all disabled:bg-secondary-900/30 disabled:text-secondary-100/50 disabled:cursor-not-allowed"
     onclick={() => {
       if (filteredCountries[highlightIndex])
