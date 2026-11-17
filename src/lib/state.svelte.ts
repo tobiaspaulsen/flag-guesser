@@ -227,6 +227,10 @@ function getDailyFlagIndex(timeMs: number, totalCountries: number): number {
   return order[day % totalCountries];
 }
 
+export function getNextDailyFlagTime(gameDate: string): number {
+  return Date.parse(gameDate) + DAY_MS;
+}
+
 function getTodayString(): string {
   return getDateString(Date.now());
 }
