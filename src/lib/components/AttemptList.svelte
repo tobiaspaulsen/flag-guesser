@@ -13,7 +13,7 @@
     Your guesses
   </div>
 
-  {#each Array.from({ length: 5 }, (_, i) => i) as i}
+  {#each Array.from({ length: 5 }, (_, i) => i) as i (i)}
     {@const guess = guessesState.guessesList[i]}
     {@const isCorrect = guess?.correct}
     <div

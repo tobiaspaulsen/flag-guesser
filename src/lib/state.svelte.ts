@@ -96,9 +96,7 @@ function saveGameStats(stats: GameStats): void {
 }
 
 function getYesterdayString(): string {
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  return getDateString(yesterday);
+  return getDateString(new Date(Date.now() - 24 * 60 * 60 * 1000));
 }
 
 function updateGameStats(won: boolean, guessCount: number): void {
@@ -112,7 +110,7 @@ function updateGameStats(won: boolean, guessCount: number): void {
   }
 
   stats.played++;
-  
+
   const previousPlayedDate = stats.lastPlayedDate;
   stats.lastPlayedDate = today;
 

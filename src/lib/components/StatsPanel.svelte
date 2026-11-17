@@ -60,7 +60,7 @@
 
   <div class="space-y-2">
     <h3 class="text-lg font-semibold text-primary-50">Guesses needed</h3>
-    {#each guessDistributionArray as { guesses, count, percentage }}
+    {#each guessDistributionArray as { guesses, count, percentage } (guesses)}
       <div class="flex items-center gap-2">
         <div class="text-primary-50 w-3 text-right text-sm">{guesses}</div>
         <div class="flex-1 h-7">

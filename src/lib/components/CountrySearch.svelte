@@ -200,7 +200,7 @@
           bind:this={listContainer}
           class="divide-y w-full divide-primary-200 m-0 max-h-[13.5rem] overflow-y-auto bg-primary-900 scrollbar-thin"
         >
-          {#each filteredCountries as countryObj, i}
+          {#each filteredCountries as countryObj, i (countryObj.countryName)}
             <CountryListItem
               countryName={countryObj.countryName}
               withImage={easyMode}

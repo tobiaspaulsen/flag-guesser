@@ -4,7 +4,11 @@ const HUE_THRESHOLD = 30; // Maximum hue difference in degrees (0-360)
 const SATURATION_THRESHOLD = 0.5; // Maximum saturation difference (0-1)
 const LIGHTNESS_THRESHOLD = 0.5; // Maximum lightness difference (0-1)
 
-const rgb_to_hsl = (r: number, g: number, b: number): [number, number, number] => {
+const rgb_to_hsl = (
+  r: number,
+  g: number,
+  b: number,
+): [number, number, number] => {
   r /= 255;
   g /= 255;
   b /= 255;
@@ -78,8 +82,12 @@ export const getImageIntersect = (
   let actualMax = 0;
 
   for (let i = 0; i < data1.length; i += channels) {
-    const r1 = data1[i], g1 = data1[i + 1], b1 = data1[i + 2];
-    const r2 = data2[i], g2 = data2[i + 1], b2 = data2[i + 2];
+    const r1 = data1[i],
+      g1 = data1[i + 1],
+      b1 = data1[i + 2];
+    const r2 = data2[i],
+      g2 = data2[i + 1],
+      b2 = data2[i + 2];
 
     const nonTransparent = channels < 4 || data1[i + 3] > 0;
     const match = nonTransparent && colors_match([r1, g1, b1], [r2, g2, b2]);
