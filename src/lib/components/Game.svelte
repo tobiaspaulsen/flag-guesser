@@ -85,8 +85,7 @@
     );
 
     const guesses = guessesState.guessesList;
-    // gameWon/gameOver are only set after the overlay animation, so check the
-    // guesses directly too.
+    // gameWon/gameOver lag behind the overlay animation.
     if (
       !guessedCountry ||
       isComputingGuess ||

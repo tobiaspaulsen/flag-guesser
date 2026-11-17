@@ -205,10 +205,8 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-// Every player must get the same flag without a backend, so the order is a
-// shuffle seeded by which pass through the list we're on: each flag appears once
-// per pass, and each pass has a different order. Days are UTC days, so the flag
-// changes at UTC midnight.
+// Seeded shuffle per pass through the list: same flag for every player, each
+// flag once per pass. Changes at UTC midnight.
 function getDailyFlagIndex(timeMs: number, totalCountries: number): number {
   const day = Math.floor(timeMs / DAY_MS);
   const random = mulberry32(Math.floor(day / totalCountries));
@@ -243,8 +241,7 @@ function saveGameState(state: PersistedGameState): void {
   localStorage.setItem(STORAGE_KEYS.DAILY_GAME_STATE, JSON.stringify(state));
 }
 
-// A resumed game keeps the flag and date it started with, so it stays consistent
-// even if the day has rolled over or the daily flag for today has changed since.
+// A resumed game keeps its original flag and date, even across midnight.
 export function createTargetCountryState(
   countriesState: ICountriesState,
   resumedGame: PersistedGameState | null,
