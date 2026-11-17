@@ -34,6 +34,10 @@ set), except where that set is simplified or wrong. Those were replaced with acc
 Commons): `ec`, `md`, `af`, `mp`, `sm`, `mt`, `ml`, `gn`, and `sh-ta` from
 [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Flag_of_Tristan_da_Cunha.svg).
 
+The colours of most remaining flag-icons SVGs were also corrected to the official colours from
+hampusborgos/country-flags (flag-icons often uses oversaturated web colours). A few were left alone
+where that set's colours look wrong or outdated (Palau, Serbia, Panama, Belize, France, Honduras).
+
 Entries whose flag is identical to their parent country's (e.g. Svalbard, Diego Garcia) are left out.
 
 ## Generating PNGs
